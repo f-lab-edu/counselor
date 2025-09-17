@@ -1,0 +1,76 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.5.5'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.hyejin'
+version = '0.0.1-SNAPSHOT'
+description = 'Toy project for Spring Boot'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+subprojects {
+	apply plugin: 'java'
+	apply plugin: 'org.springframework.boot'
+	apply plugin: 'io.spring.dependency-management'
+
+	dependencies {
+		// spring
+		implementation 'org.springframework.boot:spring-boot-starter-web'
+		implementation 'org.springframework.boot:spring-boot-starter-validation'
+		testImplementation 'org.springframework.boot:spring-boot-starter-test'
+		developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+		// lombok
+		compileOnly 'org.projectlombok:lombok'
+		annotationProcessor 'org.projectlombok:lombok'
+
+	}
+
+	tasks.named('test') {
+		useJUnitPlatform()
+	}
+
+//	bootJar {
+//		enabled = false
+//		mainClass='com.hyejin.counselor.app.TestStart'
+//	}
+//
+//	jar {
+//		enabled = true
+//	}
+}
+
+
+//project(':core') {
+//	jar {enabled = true}
+//	bootJar {
+//		manifest {
+//			attributes('Start-Class': 'com.hyejin.counselor.app.TestStart') //필수!! 메인 클래스 지정
+//		}
+//		enabled = false}
+//}
+//project(':util') {
+//	jar {enabled = true}
+//	bootJar {enabled = false}
+//}
+//project(':app') {
+//	jar {enabled = true}
+//	bootJar {enabled = false}
+//}
+
