@@ -1,7 +1,8 @@
 package com.hyejin.counselor.core.entity;
 
-import jakarta.persistence.*;
+
 import lombok.*;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "user_info") // 실제 몽고 DB 컬렉션 이름

@@ -15,13 +15,13 @@ spring:
     active: local
   data:
       mongodb:
-        uri: mongodb+srv://hyejin:qkrgpwls929!@counselorcluster.hqskivq.mongodb.net/?retryWrites=true&w=majority&appName=counselorCluster
-  jpa :
-    properties:
-      hibernate:
-        show-sql : true
-        format-sql: true
-        use_sql_comments: true
+        uri: mongodb+srv://hyejin:qkrgpwls929!@counselorcluster.hqskivq.mongodb.net/counselor?retryWrites=true&w=majority&appName=counselorCluster
+#  jpa :
+#    properties:
+#      hibernate:
+#        show-sql : true
+#        format-sql: true
+#        use_sql_comments: true
 
 logging:
   pattern:

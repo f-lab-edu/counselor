@@ -45,7 +45,9 @@ subprojects {
 	tasks.named('test') {
 		useJUnitPlatform()
 	}
-
+	bootJar {
+		mainClass = 'com.hyejin.counselor.app.TestStart'
+	}
 //	bootJar {
 //		enabled = false
 //		mainClass='com.hyejin.counselor.app.TestStart'
