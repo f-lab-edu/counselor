@@ -15,8 +15,8 @@ dependencies {
 
     // DB
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
-    implementation(platform("org.mongodb:mongodb-driver-bom:5.5.1"))
-    implementation 'org.mongodb:mongodb-driver-sync'
+//    implementation(platform("org.mongodb:mongodb-driver-bom:5.5.1"))
+//    implementation 'org.mongodb:mongodb-driver-sync'
 
 //    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
@@ -29,4 +29,9 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+// bootJar 비활성화
+tasks.withType(org.springframework.boot.gradle.tasks.bundling.BootJar).configureEach {
+    enabled = false
 }

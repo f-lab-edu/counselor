@@ -1,4 +1,4 @@
-package com.hyejin.counselor.app;
+package com.hyejin.counselor;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

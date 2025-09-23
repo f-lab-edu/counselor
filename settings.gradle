@@ -1,5 +1,3 @@
 rootProject.name = 'counselor'
-include 'app'
-include 'core'
-include 'util'
+include 'app', 'core', 'util'
 
