@@ -1,0 +1,33 @@
+server:
+  port: 8080
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
+spring:
+#  autoconfigure:
+#    exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+  config:
+    import: classpath:variables.yml
+  profiles:
+    active: local
+  data:
+      mongodb:
+        uri: mongodb+srv://hyejin:qkrgpwls929!@counselorcluster.hqskivq.mongodb.net/counselor?retryWrites=true&w=majority&appName=counselorCluster
+#  jpa :
+#    properties:
+#      hibernate:
+#        show-sql : true
+#        format-sql: true
+#        use_sql_comments: true
+
+logging:
+  pattern:
+    console: "%d %-5level %logger : %msg%n"
+    file: "[%d{HH:mm:ss.SSS}][%-5level][%logger.%method:line%line] - %msg%n"
+  level:
+    root: DEBUG
+    com.zaxxer.hikari.HikariConfig: DEBUG
+    org.hibernate.orm.jdbc.bind: trace

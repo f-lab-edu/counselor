@@ -1,0 +1,3 @@
+rootProject.name = 'counselor'
+include 'app', 'core', 'util'
+
