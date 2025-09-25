@@ -1,7 +1,6 @@
 package com.hyejin.counselor.app.controller;
 
 import com.hyejin.counselor.app.common.ApiResponse;
-import com.hyejin.counselor.app.common.eNum.ResCode;
 import com.hyejin.counselor.core.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +16,7 @@ public class UserController {
     @PostMapping("")
     public ResponseEntity<ApiResponse<Object>> userSave(@RequestBody User user) {
         userService.save(user);
-        return ResponseEntity.ok(ApiResponse.makeResponse(ResCode.SUCCESS,user.getId()));
+        return ResponseEntity.ok(ApiResponse.success(user.getId()));
     }
 
 }
