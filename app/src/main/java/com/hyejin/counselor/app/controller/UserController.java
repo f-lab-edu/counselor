@@ -16,7 +16,7 @@ public class UserController {
     @PostMapping("")
     public ResponseEntity<ApiResponse<Object>> userSave(@RequestBody User user) {
         userService.save(user);
-        return ResponseEntity.ok(ApiResponse.success(user.getId()));
+        return ResponseEntity.ok(ApiResponse.success(user));
     }
 
 }
