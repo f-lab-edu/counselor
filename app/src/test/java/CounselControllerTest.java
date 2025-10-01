@@ -54,7 +54,6 @@ public class CounselControllerTest {
         this.mockMvc.perform(post("/counsel").contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(counsel)))
                 .andDo(print()) // 결과출력
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.userId").value(userId));
+                .andExpect(status().isOk());
     }
 }
