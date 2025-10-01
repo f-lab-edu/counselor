@@ -1,5 +1,3 @@
-package controllerTest;
-
 import com.hyejin.counselor.app.common.ApiResponse;
 import com.hyejin.counselor.core.entity.User;
 import org.junit.jupiter.api.DisplayName;
