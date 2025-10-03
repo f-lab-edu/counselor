@@ -1,3 +1,5 @@
+package com.hyejin.counselor.app;
+
 import static com.hyejin.counselor.core.common.util.DateUtil.nowDate;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;

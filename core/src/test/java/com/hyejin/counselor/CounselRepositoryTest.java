@@ -1,4 +1,5 @@
-import com.hyejin.counselor.Application;
+package com.hyejin.counselor;
+
 import com.hyejin.counselor.core.common.eNum.CounselType;
 import com.hyejin.counselor.core.common.util.DateUtil;
 import com.hyejin.counselor.core.entity.Counsel;
@@ -7,13 +8,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@ActiveProfiles("test")
 @DisplayName("상담 서비스")
 @DataMongoTest
 @ContextConfiguration(classes = Application.class)
@@ -28,7 +27,7 @@ public class CounselRepositoryTest {
     void createCounselTest() {
         //Given
         Counsel counsel = Counsel.builder()
-                .userId("testId111000")
+                .userId("repo1")
                 .status(CounselType.READY.getCode())
                 .regDate(DateUtil.nowDate())
                 .build();

@@ -24,7 +24,7 @@ dependencies {
 
     // test
     testImplementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
-    testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo:3.5.4'
+
     testImplementation 'org.mockito:mockito-inline:5.2.0'
 
     implementation project(':core')

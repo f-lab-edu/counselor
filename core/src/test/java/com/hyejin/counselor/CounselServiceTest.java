@@ -1,8 +1,11 @@
+package com.hyejin.counselor;
+
 import com.hyejin.counselor.core.common.eNum.CounselType;
 import com.hyejin.counselor.core.common.eNum.ErrorCode;
 import com.hyejin.counselor.core.entity.Counsel;
 import com.hyejin.counselor.core.repository.CounselRepository;
 import com.hyejin.counselor.core.service.CounselService;
+import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,8 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.assertj.core.api.Assertions.catchThrowable;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 
 @DisplayName("상담 서비스")

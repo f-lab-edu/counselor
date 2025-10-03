@@ -22,8 +22,7 @@ public class CounselController {
 
     @PostMapping("")
     public ResponseEntity<ApiResponse<Object>> counselSave(@RequestBody Counsel counsel) {
-        counsel.setStatus(CounselType.READY.getCode());
-        counsel.setRegDate(nowDate());
+        counsel = counselService.createCounsel(counsel);
         counselService.save(counsel);
         return ResponseEntity.ok(ApiResponse.success(counsel));
     }
