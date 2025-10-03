@@ -16,8 +16,13 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    // test
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo:3.5.4'
+    testImplementation 'org.mockito:mockito-inline:5.2.0'
+    testImplementation project(':app')
+
 
     // DB
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
@@ -26,9 +31,4 @@ dependencies {
 
 test {
     useJUnitPlatform()
-}
-
-// bootJar 비활성화
-tasks.withType(org.springframework.boot.gradle.tasks.bundling.BootJar).configureEach {
-    enabled = false
 }
