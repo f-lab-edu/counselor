@@ -1,13 +1,11 @@
 package com.hyejin.counselor.app.controller;
 
 import com.hyejin.counselor.app.common.ApiResponse;
+import com.hyejin.counselor.core.entity.Counsel;
 import com.hyejin.counselor.core.service.CounselService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,6 +17,13 @@ public class CounselController {
     @GetMapping("")
     public ResponseEntity<ApiResponse<Object>> counselList(@RequestParam String status, @RequestParam int page) {
         return ResponseEntity.ok(ApiResponse.success(counselService.counselList(status, page)));
+    }
+
+    @PostMapping("")
+    public ResponseEntity<ApiResponse<Object>> counselSave(@RequestBody Counsel counsel) {
+        counsel = counselService.createCounsel(counsel);
+        counselService.save(counsel);
+        return ResponseEntity.ok(ApiResponse.success(counsel));
     }
 
 }

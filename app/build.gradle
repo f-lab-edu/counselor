@@ -23,6 +23,11 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
+    // test
+    testImplementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+
+    testImplementation 'org.mockito:mockito-inline:5.2.0'
+
     implementation project(':core')
     implementation project(':util')
 }
@@ -31,5 +36,5 @@ test {
     useJUnitPlatform()
 }
 bootJar {
-    mainClass.set('com.hyejin.counselor.TestStart')
+    mainClass.set('com.hyejin.counselor.app.Application')
 }
