@@ -1,11 +1,10 @@
 package com.hyejin.counselor;
 
-import com.hyejin.counselor.core.common.eNum.CounselType;
-import com.hyejin.counselor.core.common.eNum.ErrorCode;
+import com.hyejin.counselor.core.common.enums.CounselType;
+import com.hyejin.counselor.core.common.enums.ErrorCode;
 import com.hyejin.counselor.core.entity.Counsel;
 import com.hyejin.counselor.core.repository.CounselRepository;
 import com.hyejin.counselor.core.service.CounselService;
-import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

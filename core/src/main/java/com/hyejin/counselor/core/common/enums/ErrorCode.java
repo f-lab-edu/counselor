@@ -1,4 +1,4 @@
-package com.hyejin.counselor.core.common.eNum;
+package com.hyejin.counselor.core.common.enums;
 
 public enum ErrorCode {
 

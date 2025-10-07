@@ -1,6 +1,6 @@
 package com.hyejin.counselor;
 
-import com.hyejin.counselor.core.common.eNum.CounselType;
+import com.hyejin.counselor.core.common.enums.CounselType;
 import com.hyejin.counselor.core.common.util.DateUtil;
 import com.hyejin.counselor.core.entity.Counsel;
 import com.hyejin.counselor.core.repository.CounselRepository;
