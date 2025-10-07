@@ -9,7 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hyejin.counselor.Application;
-import com.hyejin.counselor.core.common.eNum.CounselType;
+import com.hyejin.counselor.core.common.enums.CounselType;
 import com.hyejin.counselor.core.entity.Counsel;
 import com.hyejin.counselor.core.repository.CounselRepository;
 import com.hyejin.counselor.core.service.CounselService;
