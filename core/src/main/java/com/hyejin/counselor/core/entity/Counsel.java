@@ -21,8 +21,6 @@ public class Counsel {
      */
     @Id
     private String id;
-    @DBRef
-    private User user;
     private String userId;
     private String counselorId;
     private String status;
