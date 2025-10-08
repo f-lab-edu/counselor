@@ -2,7 +2,6 @@ package com.hyejin.counselor.core.entity;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "counsel") // 실제 몽고 DB 컬렉션 이름
