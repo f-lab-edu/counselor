@@ -13,10 +13,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Counsel {
     /**
      * "counselId":91,
-     *  "userId": 23,
-     *  "counselorId":null,
-     *  "status": "R",
-     *  "regDate": yyyyMMddHHmmss
+     * "userId": 23,
+     * "counselorId":null,
+     * "status": "R",
+     * "regDate": yyyyMMddHHmmss
      */
     @Id
     private String id;
