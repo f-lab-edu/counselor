@@ -47,6 +47,7 @@ public class CounselServiceTest {
     void userSearchErrorTest() {
         //Given
         String counselId = "";
+
         // When
         Throwable throwable = catchThrowable(() -> counselService.userSearch(counselId));
 

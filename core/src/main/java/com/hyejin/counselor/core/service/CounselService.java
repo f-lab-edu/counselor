@@ -34,13 +34,13 @@ public class CounselService {
         counsel.setRegDate(nowDate());
         return counsel;
     }
-  
-     public Page<Counsel> counselList(String status, int page) {
+
+    public Page<Counsel> counselList(String status, int page) {
         Sort sort = Sort.by(Sort.Direction.DESC, "status");
         Pageable pageable = PageRequest.of(page, 10, sort);
         return counselRepository.findAllByStatus(status, pageable);
     }
-  
+
     public User userSearch(String counselId) throws Exception {
         Counsel counsel = counselRepository.findById(counselId).orElseThrow(() -> new Exception(ErrorCode.NULL_DATA.getCode() + ":" + counselId));
         User user = userRepository.findById(counsel.getUserId()).orElseThrow(() -> new Exception(ErrorCode.NULL_DATA.getCode() + ":" + counsel.getUserId()));
