@@ -41,4 +41,19 @@ public class CounselServiceTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining(ErrorCode.INVALID_COUNSEL_INFO.getCode());
     }
+
+    @Test
+    @DisplayName("채팅방에 있는 회원 조회")
+    void userSearchErrorTest() {
+        //Given
+        String counselId = "";
+        // When
+        Throwable throwable = catchThrowable(() -> counselService.userSearch(counselId));
+
+        // Then
+        assertThat(throwable)
+                .isInstanceOf(Exception.class)
+                .hasMessageContaining(ErrorCode.NULL_DATA.getCode());
+    }
+
 }

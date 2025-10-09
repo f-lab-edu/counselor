@@ -31,8 +31,8 @@ public class CounselService {
     }
 
     public User userSearch(String counselId) throws Exception {
-        Counsel counsel = counselRepository.findById(counselId).orElseThrow(() -> new Exception("Counsel not found with ID: " + counselId));
-        User user = userRepository.findById(counsel.getUserId()).orElseThrow(() -> new Exception("User not found with ID: " + counsel.getUserId()));
+        Counsel counsel = counselRepository.findById(counselId).orElseThrow(() -> new Exception(ErrorCode.NULL_DATA.getCode() + ":" + counselId));
+        User user = userRepository.findById(counsel.getUserId()).orElseThrow(() -> new Exception(ErrorCode.NULL_DATA.getCode() + ":" + counsel.getUserId()));
 
         return user;
     }
