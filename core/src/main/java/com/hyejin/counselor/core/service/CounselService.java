@@ -13,6 +13,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 import static com.hyejin.counselor.core.common.util.DateUtil.nowDate;
 
 
@@ -46,6 +48,11 @@ public class CounselService {
         User user = userRepository.findById(counsel.getUserId()).orElseThrow(() -> new Exception(ErrorCode.NULL_DATA.getCode() + ":" + counsel.getUserId()));
 
         return user;
+    }
+
+    public List<Counsel> counselHistList(String userId) {
+        List<Counsel> counselList = counselRepository.findAllByUserId(userId);
+        return counselList;
     }
 }
 

@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/counsel")
@@ -26,11 +28,17 @@ public class CounselController {
         counselService.save(counsel);
         return ResponseEntity.ok(ApiResponse.success(counsel));
     }
-  
+
     @GetMapping("/{counselId}/user")
     public ResponseEntity<ApiResponse<Object>> userSearch(@PathVariable String counselId) throws Exception {
         User userInfo = counselService.userSearch(counselId);
         return ResponseEntity.ok(ApiResponse.success(userInfo));
+    }
+
+    @GetMapping("/history/{userId}")
+    public ResponseEntity<ApiResponse<Object>> counselHistList(@PathVariable String userId) throws Exception {
+        List<Counsel> counselList = counselService.counselHistList(userId);
+        return ResponseEntity.ok(ApiResponse.success(counselList));
     }
 
 }
