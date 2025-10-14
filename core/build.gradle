@@ -26,10 +26,16 @@ dependencies {
 
     // DB
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
-    // Querydsl 필수 라이브러리
+
+    // Querydsl
     implementation 'com.querydsl:querydsl-core'
-    implementation 'com.querydsl:querydsl-mongodb'
-    // Q-클래스 생성을 위한 Annotation Processor
+    implementation('com.querydsl:querydsl-mongodb') {
+        // Querydsl이 끌고오는 구버전 MongoDB 드라이버 의존성 제외
+        exclude group: 'org.mongodb', module: 'mongo-java-driver'
+        exclude group: 'org.mongodb', module: 'mongodb-driver'
+        exclude group: 'org.mongodb', module: 'mongodb-driver-core'
+        exclude group: 'org.mongodb', module: 'mongodb-driver-sync'
+    }
     annotationProcessor 'com.querydsl:querydsl-apt'
 
 
