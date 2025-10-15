@@ -27,6 +27,8 @@ dependencies {
     // DB
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 
+    // kafka
+    implementation 'org.springframework.kafka:spring-kafka'
 }
 
 test {
