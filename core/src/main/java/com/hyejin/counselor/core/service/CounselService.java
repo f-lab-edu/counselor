@@ -2,15 +2,14 @@ package com.hyejin.counselor.core.service;
 
 import com.hyejin.counselor.core.common.enums.CounselType;
 import com.hyejin.counselor.core.common.enums.ErrorCode;
+import com.hyejin.counselor.core.dto.CounselSlice;
+import com.hyejin.counselor.core.dto.CounselCursorRequest;
 import com.hyejin.counselor.core.entity.Counsel;
 import com.hyejin.counselor.core.entity.User;
 import com.hyejin.counselor.core.repository.CounselRepository;
+import com.hyejin.counselor.core.repository.CounselRepositoryCustomImpl;
 import com.hyejin.counselor.core.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,6 +21,7 @@ import static com.hyejin.counselor.core.common.util.DateUtil.nowDate;
 @RequiredArgsConstructor
 public class CounselService {
     private final CounselRepository counselRepository;
+    private final CounselRepositoryCustomImpl counselRepositoryCustom;
     private final UserRepository userRepository;
 
     public Counsel save(Counsel counsel) {
@@ -37,10 +37,9 @@ public class CounselService {
         return counsel;
     }
 
-    public Page<Counsel> counselList(String status, int page) {
-        Sort sort = Sort.by(Sort.Direction.DESC, "status");
-        Pageable pageable = PageRequest.of(page, 10, sort);
-        return counselRepository.findAllByStatus(status, pageable);
+    public CounselSlice counselList(CounselCursorRequest cursorRequest) {
+
+        return counselRepositoryCustom.findCounselsByCursor(cursorRequest);
     }
 
     public User userSearch(String counselId) throws Exception {
@@ -53,6 +52,14 @@ public class CounselService {
     public List<Counsel> counselHistList(String userId) {
         List<Counsel> counselList = counselRepository.findAllByUserId(userId);
         return counselList;
+    }
+  
+    public CounselCursorRequest createCounselCursorRequest(String status, String lastRegDate) {
+        CounselCursorRequest cursorRequest = new CounselCursorRequest();
+        cursorRequest.setStatus(status);
+        cursorRequest.setLastRegDate(lastRegDate);
+
+        return cursorRequest;
     }
 }
 

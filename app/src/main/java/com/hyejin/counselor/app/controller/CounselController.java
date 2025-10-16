@@ -1,6 +1,7 @@
 package com.hyejin.counselor.app.controller;
 
 import com.hyejin.counselor.app.common.ApiResponse;
+import com.hyejin.counselor.core.dto.CounselCursorRequest;
 import com.hyejin.counselor.core.entity.Counsel;
 import com.hyejin.counselor.core.entity.User;
 import com.hyejin.counselor.core.service.CounselService;
@@ -18,8 +19,9 @@ public class CounselController {
     private final CounselService counselService;
 
     @GetMapping("")
-    public ResponseEntity<ApiResponse<Object>> counselList(@RequestParam String status, @RequestParam int page) {
-        return ResponseEntity.ok(ApiResponse.success(counselService.counselList(status, page)));
+    public ResponseEntity<ApiResponse<Object>> counselList(@RequestParam(defaultValue = "") String status, @RequestParam(defaultValue = "") String lastRegDate) {
+        CounselCursorRequest cursorRequest = counselService.createCounselCursorRequest(status, lastRegDate);
+        return ResponseEntity.ok(ApiResponse.success(counselService.counselList(cursorRequest)));
     }
 
     @PostMapping("")
