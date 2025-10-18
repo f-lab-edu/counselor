@@ -12,6 +12,8 @@ import com.hyejin.counselor.core.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 import static com.hyejin.counselor.core.common.util.DateUtil.nowDate;
 
 
@@ -47,6 +49,11 @@ public class CounselService {
         return user;
     }
 
+    public List<Counsel> counselHistList(String userId) {
+        List<Counsel> counselList = counselRepository.findAllByUserId(userId);
+        return counselList;
+    }
+  
     public CounselCursorRequest createCounselCursorRequest(String status, String lastRegDate) {
         CounselCursorRequest cursorRequest = new CounselCursorRequest();
         cursorRequest.setStatus(status);
