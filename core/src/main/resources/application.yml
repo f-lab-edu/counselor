@@ -37,5 +37,15 @@ logging:
     file: "[%d{HH:mm:ss.SSS}][%-5level][%logger.%method:line%line] - %msg%n"
   level:
     root: DEBUG
-    com.zaxxer.hikari.HikariConfig: DEBUG
-    org.hibernate.orm.jdbc.bind: trace
+    com.zaxxer.hikari.HikariConfig: ERROR
+    org.hibernate.orm.jdbc.bind: ERROR
+    org.springframework.web.socket: DEBUG
+    org.springframework.messaging: DEBUG
+    # Kafka
+    org.springframework.kafka.listener.KafkaMessageListenerContainer: WARN
+    org.apache.kafka: WARN
+    # MongoDB: 쿼리/커넥션 로그 숨김
+    org.springframework.data.mongodb.core.MongoTemplate: WARN
+    org.springframework.data.mongodb.core.MongoOperations: WARN
+    org.mongodb.driver: WARN
+

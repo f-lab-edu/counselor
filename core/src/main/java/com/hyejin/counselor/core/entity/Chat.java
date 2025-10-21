@@ -4,7 +4,7 @@ import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "chat") // 실제 몽고 DB 컬렉션 이름
+@Document(collection = "chat")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -13,5 +13,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Chat {
     @Id
     private String id;
-    private String message;
+    private String counselId; // 상담 ID
+    private String senderId;
+    private String senderType;
+    private String msg;
 }

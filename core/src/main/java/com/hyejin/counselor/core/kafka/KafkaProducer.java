@@ -13,7 +13,7 @@ public class KafkaProducer {
     private static final String TOPIC_NAME = "chat-topic"; // 사용할 토픽 이름
 
     public void sendMessage(Chat chat) {
-        System.out.println("Producer sending message to topic '" + TOPIC_NAME + "': " + chat.getMessage());
+        System.out.println("Producer sending message to topic '" + TOPIC_NAME + "': " + chat.getMsg());
         // 메시지 전송
         kafkaTemplate.send(TOPIC_NAME, chat);
     }

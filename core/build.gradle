@@ -16,6 +16,8 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+
     // test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
@@ -29,6 +31,9 @@ dependencies {
 
     // kafka
     implementation 'org.springframework.kafka:spring-kafka'
+
+    //websocket
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
 }
 
 test {
