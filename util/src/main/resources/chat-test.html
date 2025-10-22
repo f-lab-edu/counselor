@@ -9,6 +9,7 @@
 <body>
 <h2>WebSocket Chat 테스트</h2>
 <button onclick="connect()">연결하기</button>
+<input id="msg">
 <button onclick="sendMessage()">메시지 보내기</button>
 <pre id="log"></pre>
 
@@ -47,16 +48,21 @@
         return;
       }
 
+      const msg = document.getElementById("msg").value;
+
       const chat = {
         senderId: username,
         senderType: "U",
         counselId: counselId,
-        msg: "안녕하세요! WebSocket 테스트 중"
+        msg: msg
       };
 
       // 2. /pub/enter로 메시지 전송
       stompClient.send("/pub/chat", {}, JSON.stringify(chat));
       log("전송: " + JSON.stringify(chat));
+
+      // 입력창 비우기
+      document.getElementById("msg").value = "";
     }
 
 </script>
