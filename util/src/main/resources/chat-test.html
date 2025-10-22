@@ -48,13 +48,14 @@
       }
 
       const chat = {
-        id: username,
+        senderId: username,
+        senderType: "U",
         counselId: counselId,
         msg: "안녕하세요! WebSocket 테스트 중"
       };
 
       // 2. /pub/enter로 메시지 전송
-      stompClient.send("/pub/enter", {}, JSON.stringify(chat));
+      stompClient.send("/pub/chat", {}, JSON.stringify(chat));
       log("전송: " + JSON.stringify(chat));
     }
 
