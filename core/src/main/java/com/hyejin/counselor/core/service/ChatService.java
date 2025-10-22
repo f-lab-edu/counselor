@@ -8,6 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.hyejin.counselor.core.common.util.DateUtil.nowDate;
 
 @Service
@@ -32,6 +35,12 @@ public class ChatService {
         chat.setRegDate(nowDate());
         chatRepository.save(chat);
 
+    }
+
+    public List<Chat> chatList(Chat chat) {
+        List<Chat> list = new ArrayList<>();
+        list = chatRepository.findAllByCounselId(chat.getCounselId());
+        return list;
     }
 }
 
