@@ -53,3 +53,5 @@ gradlew
 gradlew.bat
 
 *.hprof
+app/*.hprof
+
