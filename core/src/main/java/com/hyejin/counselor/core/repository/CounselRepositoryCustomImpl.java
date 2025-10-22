@@ -12,16 +12,27 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public class CounselRepositoryCustomImpl implements CounselRepositoryCustom{
+public class CounselRepositoryCustomImpl implements CounselRepositoryCustom {
     private final MongoTemplate mongoTemplate;
 
-    public CounselRepositoryCustomImpl(MongoTemplate mongoTemplate){
+    public CounselRepositoryCustomImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
     }
 
     @Override
     public CounselSlice findCounselsByCursor(CounselCursorRequest request) {
-        Criteria cursorCriteria = createFullCriteria(request);
+
+        Criteria cursorCriteria = new Criteria();
+
+        if (request.getLastRegDate() != null && !request.getLastRegDate().isEmpty()) {
+            cursorCriteria = Criteria.where("regDate").lt(request.getLastRegDate());
+        }
+
+        // 상태에 따른 리스트 조회
+        if (request.getStatus() != null && !request.getStatus().isEmpty()) {
+            cursorCriteria.and("status").is(request.getStatus());
+        }
+
         Query query = new Query(cursorCriteria);
         Sort sort = Sort.by(
                 Sort.Direction.DESC, "regDate"
@@ -31,26 +42,6 @@ public class CounselRepositoryCustomImpl implements CounselRepositoryCustom{
         List<Counsel> results = mongoTemplate.find(query, Counsel.class);
 
         return buildUserSlice(results, request.getPageSize());
-    }
-
-    private Criteria createFullCriteria(CounselCursorRequest request) {
-        Criteria cursorCriteria = createCursorCriteria(request);
-
-        // 상태에 따른 리스트 조회
-        if (request.getStatus() != null && !request.getStatus().isEmpty()) {
-            cursorCriteria.and("status").is(request.getStatus());
-        }
-
-        return cursorCriteria;
-    }
-
-    private Criteria createCursorCriteria(CounselCursorRequest request) {
-        // 첫 페이지 요청
-        if (request.getLastRegDate() == null || request.getLastRegDate().isEmpty()) {
-            return new Criteria(); // 조건 없이 전체 조회
-        }
-        Criteria condition = Criteria.where("regDate").lt(request.getLastRegDate());
-        return condition;
     }
 
     private CounselSlice buildUserSlice(List<Counsel> results, int pageSize) {

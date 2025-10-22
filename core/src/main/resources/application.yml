@@ -16,6 +16,7 @@ spring:
   data:
       mongodb:
         uri: mongodb+srv://hyejin:qkrgpwls929!@counselorcluster.hqskivq.mongodb.net/counselor?retryWrites=true&w=majority&appName=counselorCluster
+        auto-index-creation: true
 #  jpa :
 #    properties:
 #      hibernate:

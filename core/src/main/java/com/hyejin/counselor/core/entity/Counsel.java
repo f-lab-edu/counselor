@@ -3,6 +3,7 @@ package com.hyejin.counselor.core.entity;
 import com.querydsl.core.annotations.QueryEntity;
 import lombok.*;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "counsel") // 실제 몽고 DB 컬렉션 이름
@@ -25,6 +26,8 @@ public class Counsel {
     private String userId;
     private String counselorId;
     private String status;
+
+    @Indexed(name = "reg_date_idx")
     private String regDate;
 
 }
