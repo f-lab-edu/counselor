@@ -2,6 +2,8 @@ package com.hyejin.counselor.core.entity;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "chat")
@@ -10,6 +12,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@CompoundIndexes({
+        @CompoundIndex(name = "counselId_regDate_idx", def = "{'counselId': -1, 'regDate': -1}")
+})
 public class Chat {
     @Id
     private String id;

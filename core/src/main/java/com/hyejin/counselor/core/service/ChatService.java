@@ -38,9 +38,7 @@ public class ChatService {
     }
 
     public List<Chat> chatList(Chat chat) {
-        List<Chat> list = new ArrayList<>();
-        list = chatRepository.findAllByCounselId(chat.getCounselId());
-        return list;
+        return chatRepository.findAllByCounselIdOrderByRegDateDesc(chat.getCounselId());
     }
 }
 
