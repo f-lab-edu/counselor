@@ -32,10 +32,30 @@ dependencies {
     // kafka
     implementation 'org.springframework.kafka:spring-kafka'
 
+    // Querydsl
+    implementation 'com.querydsl:querydsl-core'
+    implementation('com.querydsl:querydsl-mongodb') {
+        // Querydsl이 끌고오는 구버전 MongoDB 드라이버 의존성 제외
+        exclude group: 'org.mongodb', module: 'mongo-java-driver'
+        exclude group: 'org.mongodb', module: 'mongodb-driver'
+        exclude group: 'org.mongodb', module: 'mongodb-driver-core'
+        exclude group: 'org.mongodb', module: 'mongodb-driver-sync'
+    }
+    annotationProcessor 'com.querydsl:querydsl-apt'
+
     //websocket
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
 }
 
 test {
     useJUnitPlatform()
+}
+
+// Q-클래스 생성 디렉토리 설정
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java', 'build/generated/querydsl'] // Q-클래스 경로 추가
+        }
+    }
 }

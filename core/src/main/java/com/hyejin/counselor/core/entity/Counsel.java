@@ -1,5 +1,6 @@
 package com.hyejin.counselor.core.entity;
 
+import com.querydsl.core.annotations.QueryEntity;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -10,6 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@QueryEntity
 public class Counsel {
     /**
      * "counselId":91,
