@@ -52,4 +52,6 @@ util/src/main/.DS_Store
 gradlew
 gradlew.bat
 
+*.hprof
 app/*.hprof
+

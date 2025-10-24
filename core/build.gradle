@@ -16,6 +16,8 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+
     // test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
@@ -26,6 +28,9 @@ dependencies {
 
     // DB
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+
+    // kafka
+    implementation 'org.springframework.kafka:spring-kafka'
 
     // Querydsl
     implementation 'com.querydsl:querydsl-core'
@@ -38,7 +43,8 @@ dependencies {
     }
     annotationProcessor 'com.querydsl:querydsl-apt'
 
-
+    //websocket
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
 }
 
 test {
