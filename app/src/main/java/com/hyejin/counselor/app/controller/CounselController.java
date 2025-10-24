@@ -19,8 +19,7 @@ public class CounselController {
     private final CounselService counselService;
 
     @GetMapping("")
-    public ResponseEntity<ApiResponse<Object>> counselList(@RequestParam(defaultValue = "") String status, @RequestParam(defaultValue = "") String lastRegDate) {
-        CounselCursorRequest cursorRequest = counselService.createCounselCursorRequest(status, lastRegDate);
+    public ResponseEntity<ApiResponse<Object>> counselList(@ModelAttribute CounselCursorRequest cursorRequest) {
         return ResponseEntity.ok(ApiResponse.success(counselService.counselList(cursorRequest)));
     }
 
