@@ -7,30 +7,45 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:63342", methods = {RequestMethod.POST})
 public class ChatController {
 
     private final ChatService chatService;
 
+//  /*kafka 사용시*/
 //    @PostMapping("/chat")
 //    public ResponseEntity<ApiResponse<Object>> chatSave(@RequestBody Chat chat) {
 //        chatService.sendMessage(chat);
 //        return ResponseEntity.ok(ApiResponse.success(null));
 //    }
+//
+//    /**
+//     * 채팅입력 웹소켓
+//     * @param chat
+//     * @throws Exception
+//     */
+//    @MessageMapping("/chat")
+//    public void chatSave(@Payload Chat chat) throws Exception {
+//        chatService.chatSave(chat);
+//    }
 
-    @MessageMapping("/chat")
-    public void chatSave(@Payload Chat chat) throws Exception {
-        chatService.chatSave(chat);
+    @PostMapping("/chat")
+    public ResponseEntity<ApiResponse<Object>> chatSave(@RequestBody Chat chat) {
+        chat = chatService.chatSave(chat);
+        return ResponseEntity.ok(ApiResponse.success(chat));
     }
 
+    /**
+     * 채팅 조회
+     * @param chat
+     * @return
+     */
     @GetMapping("/chat")
     public ResponseEntity<ApiResponse<Object>> chatList(@ModelAttribute Chat chat) {
         List<Chat> list = chatService.chatList(chat);

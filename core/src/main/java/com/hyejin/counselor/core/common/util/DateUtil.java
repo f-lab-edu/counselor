@@ -18,12 +18,12 @@ public class DateUtil {
 
     /**
      * 현재 시간 반환
-     * yyyyMMddHHmmss
+     * yyyyMMddHHmmssSSS
      * @return
      */
     public static String nowDate(){
         Calendar cal = Calendar.getInstance();
         java.util.Date todate = cal.getTime();
-        return new SimpleDateFormat("yyyyMMddHHmmss").format(todate);
+        return new SimpleDateFormat("yyyyMMddHHmmssSSS").format(todate);
     }
 }

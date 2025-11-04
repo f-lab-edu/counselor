@@ -26,6 +26,9 @@ public class Counsel {
     private String userId;
     private String counselorId;
     private String status;
+    private String type;
+    private String content;
+    private String memo;
 
     @Indexed(name = "reg_date_idx")
     private String regDate;
