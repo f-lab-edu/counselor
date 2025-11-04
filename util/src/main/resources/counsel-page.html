@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>고객 상담 시스템</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        /* 커스텀 스타일 (주요 색상 설정) */
+        .bg-primary { background-color: #0d1117; } /* 다크 네이비 */
+        .text-primary { color: #0d1117; }
+        .bg-gray-100 { background-color: #f7f7f7; } /* 밝은 회색 배경 */
+        .tab-active { border-bottom: 3px solid #0d1117; font-weight: 600; }
+        .tab-button.active { background-color: #0d1117; color: white; }
+        .status-tag { padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 600; }
+        .status-waiting { background-color: #fff3c9; color: #b45309; } /* 대기중 (노랑) */
+        .status-progress { background-color: #c7f2c7; color: #166534; } /* 진행중 (초록) */
+        .status-done { background-color: #d1e7ff; color: #1e40af; } /* 완료 (파랑) */
+        /* 채팅 말풍선 스타일 */
+        .chat-bubble { max-width: 60%; padding: 10px 15px; border-radius: 18px; margin-bottom: 10px; }
+        .chat-bubble.mine { background-color: #0d1117; color: white; margin-left: auto; border-bottom-right-radius: 4px; }
+        .chat-bubble.other { background-color: #f0f0f0; color: #333; margin-right: auto; border-bottom-left-radius: 4px; }
+    </style>
+</head>
+<body class="bg-white">
+
+<header class="flex justify-between items-center px-6 py-3 border-b border-gray-200">
+    <div class="text-xl font-bold text-primary">상담 시스템</div>
+    <div>
+        <span class="text-sm cursor-pointer hover:underline text-gray-700">고객 화면</span>
+        <span class="ml-4 text-sm cursor-pointer hover:underline text-gray-700">상담사 화면</span>
+    </div>
+</header>
+
+<nav class="flex px-6 py-2 border-b border-gray-200" id="customer-nav">
+    <button class="nav-tab tab-button active px-4 py-2 mr-2 text-sm" data-target="apply">상담 신청하기</button>
+    <button class="nav-tab tab-button px-4 py-2 mr-2 text-sm" data-target="list">내 상담 리스트</button>
+    <button class="nav-tab tab-button px-4 py-2 text-sm" data-target="chat">상담 채팅</button>
+</nav>
+
+<main class="p-8">
+    <section id="apply" class="content-section">
+        <h2 class="text-2xl font-semibold text-center mb-2">상담 신청하기</h2>
+        <p class="text-center text-gray-600 mb-8">전문 상담사가 친절하게 안내해드립니다</p>
+
+        <div class="max-w-xl mx-auto p-8 border rounded-lg shadow-sm bg-white">
+            <h3 class="text-lg font-semibold mb-6 border-b pb-2">상담 정보 입력</h3>
+            <p class="text-sm text-gray-600 mb-6">아래 정보를 입력하시면 상담사가 배정됩니다</p>
+
+            <form id="consultation-form">
+                <div class="grid grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">이름 *</label>
+                        <input type="text" value="홍길동" class="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm p-3" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">연락처 *</label>
+                        <input type="text" value="010-1234-5678" class="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm p-3" required>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700">이메일</label>
+                    <input type="email" value="example@email.com" class="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm p-3">
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700">상담 분야 *</label>
+                    <select class="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm p-3 appearance-none" required>
+                        <option value="">상담 분야를 선택하세요</option>
+                        <option value="product">제품 문의</option>
+                        <option value="tech">기술 지원</option>
+                        <option value="payment">결제/환불</option>
+                        <option value="general">일반 상담</option>
+                        <option value="complaint">불만 접수</option>
+                    </select>
+                </div>
+
+                <div class="mb-8">
+                    <label class="block text-sm font-medium text-gray-700">상담 내용 *</label>
+                    <textarea rows="4" class="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm p-3" placeholder="상담 받고 싶은 내용을 자세히 작성해주세요" required></textarea>
+                </div>
+
+                <button type="submit" class="w-full bg-primary text-white font-semibold py-3 rounded-md hover:bg-gray-800 transition duration-150">
+                    상담 신청하기
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <section id="list" class="content-section hidden">
+        <h2 class="text-xl font-semibold mb-6">내 상담 내역</h2>
+        <p class="text-gray-600 mb-6">신청하신 상담 내역을 확인할 수 있습니다</p>
+
+        <div class="flex space-x-2 mb-6">
+            <button class="tab-button active px-4 py-2 text-sm rounded-md bg-primary text-white" data-list-filter="all">전체</button>
+            <button class="tab-button px-4 py-2 text-sm rounded-md hover:bg-gray-100" data-list-filter="waiting">대기중</button>
+            <button class="tab-button px-4 py-2 text-sm rounded-md hover:bg-gray-100" data-list-filter="progress">진행중</button>
+            <button class="tab-button px-4 py-2 text-sm rounded-md hover:bg-gray-100" data-list-filter="done">완료</button>
+        </div>
+
+        <div id="consultation-list" class="space-y-4">
+            <div class="p-4 border rounded-lg shadow-sm bg-white cursor-pointer hover:bg-gray-50 consultation-item" data-status="progress">
+                <div class="flex justify-between items-start mb-2">
+                    <div class="font-bold">CS-2024-001</div>
+                    <span class="text-red-500 font-bold text-lg">2</span>
+                </div>
+                <div class="flex items-center mb-2">
+                    <span class="status-tag status-progress mr-2">진행중</span>
+                    <span class="text-sm text-gray-700">상담사: 김상담</span>
+                </div>
+                <div class="text-gray-600 mb-2">제품 문의</div>
+                <div class="text-sm text-gray-500 flex justify-between">
+                    <div>확인했습니다. 잠시만 기다려주세요.</div>
+                    <div>2024-10-30 10:30</div>
+                </div>
+            </div>
+
+            <div class="p-4 border rounded-lg shadow-sm bg-white cursor-pointer hover:bg-gray-50 consultation-item" data-status="done">
+                <div class="font-bold mb-2">CS-2024-002</div>
+                <div class="flex items-center mb-2">
+                    <span class="status-tag status-done mr-2">완료</span>
+                    <span class="text-sm text-gray-700">상담사: 김상담</span>
+                </div>
+                <div class="text-gray-600 mb-2">기술 지원</div>
+                <div class="text-sm text-gray-500 flex justify-between">
+                    <div>문제가 해결되었습니다. 감사합니다!</div>
+                    <div>2024-10-28 14:20</div>
+                </div>
+            </div>
+
+            <div class="p-4 border rounded-lg shadow-sm bg-white cursor-pointer hover:bg-gray-50 consultation-item" data-status="waiting">
+                <div class="font-bold mb-2">CS-2024-003</div>
+                <div class="flex items-center mb-2">
+                    <span class="status-tag status-waiting mr-2">대기중</span>
+                    <span class="text-sm text-gray-700">상담사: 김상담</span>
+                </div>
+                <div class="text-gray-600 mb-2">결제/환불</div>
+                <div class="text-sm text-gray-500 flex justify-between">
+                    <div>상담사 배정 대기중입니다.</div>
+                    <div>2024-10-29 16:45</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="chat" class="content-section hidden">
+        <div class="max-w-3xl mx-auto h-[600px] border rounded-lg shadow-lg flex flex-col bg-white">
+            <div class="p-4 border-b flex items-center">
+                <div class="w-10 h-10 rounded-full bg-gray-200 mr-3 flex items-center justify-center">
+                    <span role="img" aria-label="상담사 아바타">👩‍💼</span>
+                </div>
+                <div>
+                    <div class="font-semibold text-gray-800">상담사</div>
+                    <div class="text-xs text-green-600 font-medium">온라인</div>
+                </div>
+            </div>
+
+            <div id="chat-messages" class="flex-grow p-4 overflow-y-auto space-y-4">
+                <div class="flex items-start">
+                    <div class="w-8 h-8 rounded-full bg-gray-200 mr-3 flex items-center justify-center">
+                        <span role="img" aria-label="상담사 아바타">👩‍💼</span>
+                    </div>
+                    <div>
+                        <div class="text-sm font-medium">김상담</div>
+                        <div class="chat-bubble other">안녕하세요! 무엇을 도와드릴까요?</div>
+                        <div class="text-xs text-gray-500">오전 10:00</div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col items-end">
+                    <div class="chat-bubble mine">안녕하세요. 제품 문의드립니다.</div>
+                    <div class="text-xs text-gray-500">오전 10:01</div>
+                </div>
+
+                <div class="flex items-start">
+                    <div class="w-8 h-8 rounded-full bg-gray-200 mr-3 flex items-center justify-center">
+                        <span role="img" aria-label="상담사 아바타">👩‍💼</span>
+                    </div>
+                    <div>
+                        <div class="text-sm font-medium">상담사</div>
+                        <div class="chat-bubble other">네, 어떤 제품에 대해 궁금하신가요? 자세히 알려주시면 친절하게 안내해드리겠습니다.</div>
+                        <div class="text-xs text-gray-500">오전 10:01</div>
+                    </div>
+                </div>
+
+                <div class="flex items-start">
+                    <div class="w-8 h-8 rounded-full bg-gray-200 mr-3 flex items-center justify-center">
+                        <span role="img" aria-label="상담사 아바타">👩‍💼</span>
+                    </div>
+                    <div>
+                        <div class="text-sm font-medium">이지훈</div>
+                        <div class="chat-bubble other">안녕하세요, 이지훈님. 무엇을 도와드릴까요?</div>
+                        <div class="text-xs text-gray-500">오전 10:01</div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col items-end">
+                    <div class="chat-bubble mine">제품 A의 사양과 가격이 궁금합니다.</div>
+                    <div class="text-xs text-gray-500">오전 10:02</div>
+                </div>
+            </div>
+
+            <div class="p-4 border-t flex items-center">
+                <input type="text" id="chat-input" placeholder="메시지를 입력하세요..." class="flex-grow p-3 border rounded-full bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary">
+                <button id="send-chat-btn" class="ml-3 p-3 bg-primary text-white rounded-full hover:bg-gray-800 transition duration-150">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <section id="dashboard" class="content-section hidden">
+        <div class="flex mb-6">
+            <button class="nav-tab tab-button active px-4 py-2 mr-2 text-sm bg-primary text-white rounded-md" data-target="dashboard">대시보드</button>
+            <button class="nav-tab tab-button px-4 py-2 text-sm hover:bg-gray-100 rounded-md" data-target="counselor-list">상담 리스트</button>
+        </div>
+        <h2 class="text-xl font-semibold mb-2">상담 대시보드</h2>
+        <p class="text-gray-600 mb-6">상담 통계 및 이력을 확인하세요</p>
+
+        <div class="grid grid-cols-4 gap-4 mb-8">
+            <div class="p-6 border rounded-lg shadow-sm bg-white">
+                <div class="text-gray-500 text-sm">총 상담</div>
+                <div class="text-3xl font-bold mt-1">387</div>
+                <div class="text-sm text-green-600">+12.5% <span class="text-gray-500">지난주 대비</span></div>
+            </div>
+            <div class="p-6 border rounded-lg shadow-sm bg-white">
+                <div class="text-gray-500 text-sm">완료된 상담</div>
+                <div class="text-3xl font-bold mt-1">338</div>
+                <div class="text-sm text-gray-500">87.3% 완료율</div>
+            </div>
+            <div class="p-6 border rounded-lg shadow-sm bg-white">
+                <div class="text-gray-500 text-sm">진행중인 상담</div>
+                <div class="text-3xl font-bold mt-1">12</div>
+                <div class="text-sm text-gray-500">실시간 진행중</div>
+            </div>
+            <div class="p-6 border rounded-lg shadow-sm bg-white">
+                <div class="text-gray-500 text-sm">평균 응답 시간</div>
+                <div class="text-3xl font-bold mt-1">2.3분</div>
+                <div class="text-sm text-red-600">-0.5분 <span class="text-gray-500">지난주 대비</span></div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-8">
+            <div class="p-6 border rounded-lg shadow-sm bg-white">
+                <h3 class="text-lg font-semibold mb-4">주간 상담 트렌드</h3>
+                <p class="text-sm text-gray-600 mb-6">이번 주 상담 접수 및 완료 현황</p>
+                <div id="weekly-chart" class="h-64"></div>
+                <div class="flex justify-center space-x-4 mt-4 text-sm">
+                    <span class="flex items-center"><span class="w-3 h-3 bg-blue-500 rounded-full mr-2"></span> 완료</span>
+                    <span class="flex items-center"><span class="w-3 h-3 bg-green-500 rounded-full mr-2"></span> 접수</span>
+                </div>
+                <div class="text-sm text-center text-gray-600 mt-2">월 화 수 목 금 토 일</div>
+            </div>
+
+            <div class="p-6 border rounded-lg shadow-sm bg-white">
+                <h3 class="text-lg font-semibold mb-4">시간대별 상담 건수</h3>
+                <p class="text-sm text-gray-600 mb-6">오늘 시간대별 상담 분포</p>
+                <div id="hourly-chart" class="h-64"></div>
+                <div class="text-sm text-center text-gray-600 mt-4">09:00 11:00 13:00 15:00 17:00</div>
+                <div class="text-center text-purple-500 text-sm mt-1">→ 상담 건수</div>
+            </div>
+
+            <div class="col-span-2 p-6 border rounded-lg shadow-sm bg-white">
+                <h3 class="text-lg font-semibold mb-4">카테고리별 상담 분포</h3>
+                <p class="text-sm text-gray-600 mb-6">이번 달 상담 분야별 현황</p>
+
+                <div class="flex items-center justify-around">
+                    <div id="category-chart" class="w-1/3 h-64"></div>
+                    <div class="w-1/2 space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="flex items-center"><span class="w-3 h-3 bg-blue-500 rounded-full mr-2"></span> 제품 문의 <span class="ml-2 font-medium">37%</span></span>
+                            <span class="font-bold">145건</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="flex items-center"><span class="w-3 h-3 bg-green-500 rounded-full mr-2"></span> 기술 지원 <span class="ml-2 font-medium">25%</span></span>
+                            <span class="font-bold">96건</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="flex items-center"><span class="w-3 h-3 bg-orange-500 rounded-full mr-2"></span> 결제/환불 <span class="ml-2 font-medium">17%</span></span>
+                            <span class="font-bold">67건</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="flex items-center"><span class="w-3 h-3 bg-purple-500 rounded-full mr-2"></span> 일반 상담 <span class="ml-2 font-medium">14%</span></span>
+                            <span class="font-bold">54건</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="flex items-center"><span class="w-3 h-3 bg-red-500 rounded-full mr-2"></span> 불만 접수 <span class="ml-2 font-medium">6%</span></span>
+                            <span class="font-bold">23건</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="counselor-list" class="content-section hidden">
+        <div class="flex mb-6">
+            <button class="nav-tab tab-button px-4 py-2 mr-2 text-sm hover:bg-gray-100 rounded-md" data-target="dashboard">대시보드</button>
+            <button class="nav-tab tab-button active px-4 py-2 text-sm bg-primary text-white rounded-md" data-target="counselor-list">상담 리스트</button>
+        </div>
+
+        <h2 class="text-xl font-semibold mb-6">상담 관리</h2>
+
+        <div class="mb-6">
+            <input type="text" placeholder="고객명 또는 상담 분야로 검색" class="w-full p-3 border rounded-md bg-gray-100 focus:outline-none focus:ring-1 focus:ring-primary">
+        </div>
+
+        <div class="grid grid-cols-3 gap-4 mb-6">
+            <div class="p-6 border rounded-lg shadow-sm bg-white flex justify-between items-center">
+                <div>
+                    <div class="text-gray-500">대기중</div>
+                    <div class="text-3xl font-bold">3건</div>
+                </div>
+                <span class="text-yellow-600 text-3xl">🕒</span>
+            </div>
+            <div class="p-6 border rounded-lg shadow-sm bg-white flex justify-between items-center">
+                <div>
+                    <div class="text-gray-500">진행중</div>
+                    <div class="text-3xl font-bold">2건</div>
+                </div>
+                <span class="text-green-600 text-3xl">💬</span>
+            </div>
+            <div class="p-6 border rounded-lg shadow-sm bg-white flex justify-between items-center">
+                <div>
+                    <div class="text-gray-500">오늘 완료</div>
+                    <div class="text-3xl font-bold">1건</div>
+                </div>
+                <span class="text-blue-600 text-3xl">✅</span>
+            </div>
+        </div>
+
+        <div class="flex space-x-2 mb-6">
+            <button class="tab-button active px-4 py-2 text-sm rounded-md bg-primary text-white" data-counselor-filter="all">전체</button>
+            <button class="tab-button px-4 py-2 text-sm rounded-md hover:bg-gray-100" data-counselor-filter="waiting">대기중</button>
+            <button class="tab-button px-4 py-2 text-sm rounded-md hover:bg-gray-100" data-counselor-filter="progress">진행중</button>
+            <button class="tab-button px-4 py-2 text-sm rounded-md hover:bg-gray-100" data-counselor-filter="done">완료</button>
+        </div>
+
+        <div id="counselor-consultation-list" class="space-y-4">
+            <div class="p-4 border rounded-lg shadow-sm bg-white flex justify-between items-center cursor-pointer hover:bg-gray-50 consultation-item" data-status="waiting">
+                <div class="flex items-start">
+                    <div class="w-10 h-10 rounded-full bg-gray-200 mr-4 flex items-center justify-center">
+                        <span role="img" aria-label="고객 아바타">🧑</span>
+                    </div>
+                    <div>
+                        <div class="font-bold text-lg flex items-center">이지훈 <span class="status-tag status-waiting ml-2">대기중</span></div>
+                        <div class="text-gray-600 font-medium">제품 문의</div>
+                        <div class="text-sm text-gray-500">제품 사양에 궁금한 점이 있습니다.</div>
+                    </div>
+                </div>
+                <div class="flex flex-col items-end">
+                    <div class="text-sm text-gray-500 mb-1">5분 전</div>
+                    <span class="bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold">3</span>
+                </div>
+            </div>
+
+            <div class="p-4 border rounded-lg shadow-sm bg-white flex justify-between items-center cursor-pointer hover:bg-gray-50 consultation-item" data-status="progress">
+                <div class="flex items-start">
+                    <div class="w-10 h-10 rounded-full bg-gray-200 mr-4 flex items-center justify-center">
+                        <span role="img" aria-label="고객 아바타">👧</span>
+                    </div>
+                    <div>
+                        <div class="font-bold text-lg flex items-center">박민지 <span class="status-tag status-progress ml-2">진행중</span></div>
+                        <div class="text-gray-600 font-medium">기술 지원</div>
+                        <div class="text-sm text-gray-500">문제가 해결되었습니다. 감사합니다!</div>
+                    </div>
+                </div>
+                <div class="flex flex-col items-end">
+                    <div class="text-sm text-gray-500">15분 전</div>
+                </div>
+            </div>
+
+            <div class="p-4 border rounded-lg shadow-sm bg-white flex justify-between items-center cursor-pointer hover:bg-gray-50 consultation-item" data-status="waiting">
+                <div class="flex items-start">
+                    <div class="w-10 h-10 rounded-full bg-gray-200 mr-4 flex items-center justify-center">
+                        <span role="img" aria-label="고객 아바타">👩</span>
+                    </div>
+                    <div>
+                        <div class="font-bold text-lg flex items-center">최준영 <span class="status-tag status-waiting ml-2">대기중</span></div>
+                        <div class="text-gray-600 font-medium">결제/환불: 오후 2:00</div>
+                        <div class="text-sm text-gray-500"></div>
+                    </div>
+                </div>
+                <div class="flex flex-col items-end">
+                    <div class="text-sm text-gray-500">20분 전</div>
+                </div>
+            </div>
+
+            <div class="p-4 border rounded-lg shadow-sm bg-white flex justify-between items-center cursor-pointer hover:bg-gray-50 consultation-item" data-status="waiting">
+                <div class="flex items-start">
+                    <div class="w-10 h-10 rounded-full bg-gray-200 mr-4 flex items-center justify-center">
+                        <span role="img" aria-label="고객 아바타">🧑</span>
+                    </div>
+                    <div>
+                        <div class="font-bold text-lg flex items-center">김수원 <span class="status-tag status-waiting ml-2">대기중</span></div>
+                        <div class="text-gray-600 font-medium">기술 지원</div>
+                        <div class="text-sm text-gray-500">설치에 문제가 있습니다.</div>
+                    </div>
+                </div>
+                <div class="flex flex-col items-end">
+                    <div class="text-sm text-gray-500">30분 전</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="counselor-chat-detail" class="content-section hidden">
+        <div class="mb-4">
+            <button id="back-to-list" class="text-sm text-blue-600 hover:underline">← 리스트로 돌아가기</button>
+        </div>
+
+        <div class="flex h-[700px] border rounded-lg shadow-lg bg-white">
+            <div class="flex-grow flex flex-col">
+                <div class="p-4 border-b">
+                    <div class="text-gray-500 text-sm">안녕하세요! 제품 문의드립니다.</div>
+                </div>
+
+                <div id="counselor-chat-messages" class="flex-grow p-4 overflow-y-auto space-y-4">
+                    <div class="flex items-start">
+                        <div class="w-8 h-8 rounded-full bg-gray-200 mr-3 flex items-center justify-center">
+                            <span role="img" aria-label="고객 아바타">🧑</span>
+                        </div>
+                        <div>
+                            <div class="text-sm text-gray-500">오전 10:00</div>
+                            <div class="chat-bubble other">안녕하세요! 제품 문의드립니다.</div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col items-end">
+                        <div class="text-xs text-gray-500">오전 10:01</div>
+                        <div class="chat-bubble mine">안녕하세요, **이지훈님**. 무엇을 도와드릴까요?</div>
+                    </div>
+
+                    <div class="flex items-start">
+                        <div class="w-8 h-8 rounded-full bg-gray-200 mr-3 flex items-center justify-center">
+                            <span role="img" aria-label="고객 아바타">🧑</span>
+                        </div>
+                        <div>
+                            <div class="text-xs text-gray-500">오전 10:02</div>
+                            <div class="chat-bubble other">제품 A의 사양과 가격이 궁금합니다.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-4 border-t flex items-center">
+                    <input type="text" placeholder="메시지를 입력하세요..." class="flex-grow p-3 border rounded-full bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary">
+                    <button class="ml-3 p-3 bg-primary text-white rounded-full hover:bg-gray-800 transition duration-150">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="w-80 p-6 border-l bg-gray-50 flex flex-col">
+                <div class="text-xl font-bold mb-4">이지훈</div>
+
+                <div class="space-y-3 text-sm mb-6">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">전화번호</span>
+                        <span class="font-medium">010-1234-5678</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">이메일</span>
+                        <span class="font-medium">lee@example.com</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">상담 분야</span>
+                        <span class="font-medium text-red-600">제품 문의</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">상담 유형</span>
+                        <span class="font-medium">채팅 상담</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">신청 시간</span>
+                        <span class="font-medium">2024년 10월 28일 오전 10:00</span>
+                    </div>
+                </div>
+
+                <div class="p-4 bg-white border rounded-lg mb-6">
+                    <div class="font-semibold mb-2">문의 내용</div>
+                    <p class="text-sm text-gray-700">제품 사양과 가격에 대해 자세히 알고 싶습니다. 배송 기간도 궁금합니다.</p>
+                </div>
+
+                <button class="w-full py-2 mb-2 border rounded-md hover:bg-gray-100 text-sm">상담 메모 작성</button>
+                <button class="w-full py-2 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm">상담 종료</button>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<script>
+        $(document).ready(function() {
+            // 초기 화면 설정 (고객 화면: 상담 신청하기)
+            let currentView = 'customer'; // 'customer' 또는 'counselor'
+
+            // --- 공통 탭/화면 전환 로직 ---
+            function switchScreen(target) {
+                $('.content-section').addClass('hidden');
+                $('#' + target).removeClass('hidden');
+
+                // 네비게이션 탭 활성화 상태 변경
+                $('.nav-tab').removeClass('tab-button active bg-primary text-white').addClass('hover:bg-gray-100');
+                $(`[data-target="${target}"]`).removeClass('hover:bg-gray-100').addClass('tab-button active bg-primary text-white');
+            }
+
+            // 초기 로드 시 'apply' (상담 신청하기) 화면 표시
+            switchScreen('apply');
+
+            // 고객 화면 탭 클릭 이벤트
+            $('#customer-nav .nav-tab').on('click', function() {
+                currentView = 'customer';
+                const target = $(this).data('target');
+                switchScreen(target);
+            });
+
+            // 헤더의 고객 화면 / 상담사 화면 전환
+            $('header span:contains("고객 화면")').on('click', function() {
+                $('#customer-nav').removeClass('hidden');
+                switchScreen('apply'); // 고객 화면의 기본 화면
+            });
+
+            $('header span:contains("상담사 화면")').on('click', function() {
+                $('#customer-nav').addClass('hidden');
+                switchScreen('dashboard'); // 상담사 화면의 기본 화면
+            });
+
+            // 상담사 화면 탭 클릭 (대시보드 / 상담 리스트)
+            $('#dashboard, #counselor-list').on('click', '.nav-tab', function() {
+                const target = $(this).data('target');
+
+                // 상담사 탭 활성화 상태 변경
+                $('#dashboard .nav-tab, #counselor-list .nav-tab').removeClass('active bg-primary text-white hover:bg-gray-100').addClass('hover:bg-gray-100');
+                $(this).removeClass('hover:bg-gray-100').addClass('active bg-primary text-white');
+
+                // 화면 전환
+                if (target === 'dashboard') {
+                    $('#counselor-list').addClass('hidden');
+                    $('#dashboard').removeClass('hidden');
+                } else if (target === 'counselor-list') {
+                    $('#dashboard').addClass('hidden');
+                    $('#counselor-list').removeClass('hidden');
+                }
+            });
+
+
+            // --- 상담 신청하기 로직 (apply) ---
+            $('#consultation-form').on('submit', function(e) {
+                e.preventDefault();
+
+                // **AJAX 주석: 상담 신청 데이터 서버로 전송**
+                // const formData = $(this).serialize();
+                // $.ajax({
+                //     url: '/api/consultation/apply', // API 엔드포인트
+                //     type: 'POST',
+                //     data: formData,
+                //     success: function(response) {
+                //         alert('상담 신청이 완료되었습니다.');
+                //         switchScreen('list'); // 신청 후 리스트 화면으로 이동
+                //         // list 화면 데이터 새로고침 함수 호출 필요
+                //     },
+                //     error: function(xhr) {
+                //         alert('상담 신청 중 오류가 발생했습니다.');
+                //     }
+                // });
+                alert('상담 신청 완료되었습니다. (예시)');
+                // 탭 전환 (실제 구현 시 위 ajax success에서 처리)
+                $('#customer-nav button[data-target="list"]').click();
+            });
+
+            // --- 내 상담 리스트 로직 (list) ---
+            $('#list button[data-list-filter]').on('click', function() {
+                $('#list button[data-list-filter]').removeClass('active bg-primary text-white').addClass('hover:bg-gray-100');
+                $(this).removeClass('hover:bg-gray-100').addClass('active bg-primary text-white');
+
+                const filter = $(this).data('list-filter');
+                $('.consultation-item').each(function() {
+                    if (filter === 'all' || $(this).data('status') === filter) {
+                        $(this).removeClass('hidden');
+                    } else {
+                        $(this).addClass('hidden');
+                    }
+                });
+
+                // **AJAX 주석: 필터링된 상담 리스트 데이터 로드**
+                // $.ajax({
+                //     url: `/api/customer/consultations?status=${filter}`,
+                //     type: 'GET',
+                //     success: function(data) {
+                //         // $('#consultation-list').empty();
+                //         // data를 이용하여 리스트 항목을 동적으로 생성
+                //     }
+                // });
+            });
+
+            // 리스트 항목 클릭 시 채팅 화면으로 이동 (임시)
+            $('#consultation-list').on('click', '.consultation-item', function() {
+                $('#customer-nav button[data-target="chat"]').click();
+                // **AJAX 주석: 해당 상담 ID의 채팅 내역 로드**
+                // const consultationId = $(this).find('.font-bold').text(); // CS-2024-001
+                // $.ajax({
+                //     url: `/api/chat/history/${consultationId}`,
+                //     type: 'GET',
+                //     success: function(data) {
+                //         // data를 이용하여 $('#chat-messages')에 채팅 메시지 추가
+                //     }
+                // });
+            });
+
+
+            // --- 상담사 리스트 로직 (counselor-list) ---
+            $('#counselor-list button[data-counselor-filter]').on('click', function() {
+                $('#counselor-list button[data-counselor-filter]').removeClass('active bg-primary text-white').addClass('hover:bg-gray-100');
+                $(this).removeClass('hover:bg-gray-100').addClass('active bg-primary text-white');
+
+                const filter = $(this).data('counselor-filter');
+                $('#counselor-consultation-list .consultation-item').each(function() {
+                    if (filter === 'all' || $(this).data('status') === filter) {
+                        $(this).removeClass('hidden');
+                    } else {
+                        $(this).addClass('hidden');
+                    }
+                });
+
+                // **AJAX 주석: 필터링된 상담사 상담 리스트 데이터 로드**
+                // $.ajax({
+                //     url: `/api/counselor/consultations?status=${filter}`,
+                //     type: 'GET',
+                //     success: function(data) {
+                //         // $('#counselor-consultation-list').empty();
+                //         // data를 이용하여 리스트 항목을 동적으로 생성
+                //     }
+                // });
+            });
+
+            // 상담사 리스트 항목 클릭 시 상세 채팅 화면으로 이동 (이지훈 예시)
+            $('#counselor-consultation-list').on('click', '.consultation-item', function() {
+                $('#counselor-list').addClass('hidden');
+                $('#dashboard').addClass('hidden');
+                $('#counselor-chat-detail').removeClass('hidden');
+
+                // **AJAX 주석: 상세 채팅 내역 및 고객 정보 로드**
+                // const customerName = $(this).find('.font-bold').text().split(' ')[0];
+                // $.ajax({
+                //     url: `/api/chat/detail/${consultationId}`,
+                //     type: 'GET',
+                //     success: function(data) {
+                //         // data를 이용하여 상세 정보 업데이트
+                //     }
+                // });
+            });
+
+            // 상세 채팅에서 리스트로 돌아가기
+            $('#back-to-list').on('click', function() {
+                $('#counselor-chat-detail').addClass('hidden');
+                $('#counselor-list').removeClass('hidden');
+            });
+
+
+            // --- 채팅 전송 로직 (chat / counselor-chat-detail) ---
+            $('#send-chat-btn').on('click', function() {
+                sendMessage('chat');
+            });
+            $('#chat-input').on('keypress', function(e) {
+                if (e.which == 13) {
+                    sendMessage('chat');
+                }
+            });
+
+            $('#counselor-chat-detail button:contains("메시지를 입력하세요")').parent().find('button').on('click', function() {
+                sendMessage('counselor-chat-detail');
+            });
+            $('#counselor-chat-detail input[type="text"]').on('keypress', function(e) {
+                if (e.which == 13) {
+                    sendMessage('counselor-chat-detail');
+                }
+            });
+
+            function sendMessage(sectionId) {
+                const input = $(`#${sectionId} input[type="text"]`);
+                const message = input.val().trim();
+                const messagesContainer = $(`#${sectionId} #chat-messages, #${sectionId} #counselor-chat-messages`);
+
+                if (message) {
+                    const now = new Date();
+                    const time = now.getHours() + ':' + ('0' + now.getMinutes()).slice(-2);
+
+                    // 새 메시지 생성
+                    const newMessage = `
+                        <div class="flex flex-col items-end">
+                            <div class="chat-bubble mine">${message}</div>
+                            <div class="text-xs text-gray-500">오전 ${time} (예시)</div>
+                        </div>
+                    `;
+                    messagesContainer.append(newMessage);
+                    input.val(''); // 입력 필드 초기화
+                    messagesContainer.scrollTop(messagesContainer[0].scrollHeight); // 스크롤 하단으로 이동
+
+                    // **AJAX 주석: 채팅 메시지 서버로 전송**
+                    // const consultationId = "CS-2024-001"; // 현재 채팅방 ID
+                    // $.ajax({
+                    //     url: '/api/chat/send',
+                    //     type: 'POST',
+                    //     data: { consultationId: consultationId, message: message },
+                    //     success: function(response) {
+                    //         // 전송 성공 처리 (필요 시)
+                    //     }
+                    // });
+                }
+            }
+        });
+    </script>
+</body>
+</html>
