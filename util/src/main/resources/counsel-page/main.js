@@ -38,8 +38,9 @@ let currentFile = 'apply.html';
  * 특정 화면 파일을 로드하고 네비게이션을 업데이트합니다.
  * @param {string} fileToLoad - 로드할 HTML 파일 경로 (예: 'apply.html')
  * @param {string} tabId - 활성화할 탭의 ID (예: 'apply')
+ * @param {object} [data={}] - 로드된 화면으로 전달할 추가 데이터
  */
-function loadView(fileToLoad, tabId) {
+function loadView(fileToLoad, tabId, data = {}) {
     currentFile = fileToLoad;
     $('#content-area').load(fileToLoad, function() {
         // 로드 성공 후 탭 활성화 상태 업데이트
@@ -47,7 +48,7 @@ function loadView(fileToLoad, tabId) {
         $(`#main-nav button[data-id="${tabId}"]`).removeClass('hover:bg-gray-100').addClass('active bg-primary text-white');
 
         // 로드된 화면에 따라 특정 로직 바인딩 함수 호출
-        bindViewLogic(tabId);
+        bindViewLogic(tabId, data);
     });
 }
 
@@ -79,9 +80,11 @@ function updateNavigation(role) {
 
 /**
  * 로드된 화면에 따라 필요한 이벤트 리스너와 로직을 바인딩합니다.
+ * @param {string} tabId - 활성화할 탭의 ID
+ * @param {object} [data={}] - loadView에서 전달받은 데이터
  * AJAX 주석은 여기에 위치합니다.
  */
-function bindViewLogic(tabId) {
+function bindViewLogic(tabId, data = {}) {
 
     // --- 고객 화면 로직 ---
     if (tabId === 'apply') {
@@ -117,23 +120,41 @@ function bindViewLogic(tabId) {
                 }
             });
 
-            // **AJAX 주석: 필터링된 상담 리스트 데이터 로드**
-            // $.ajax({
-            //     url: `/api/customer/consultations?status=${filter}`, type: 'GET',
-            //     success: function(data) { /* 리스트 업데이트 로직 */ }
-            // });
+            // **AJAX 주석: 필터링된 상담 리스트 데이터 로드** +${filter}`
+             $.ajax({
+                 url: 'http://localhost:8080/counsel/history/testId', type: 'GET',
+                 contentType: 'application/json',
+                 success: function(data) { /* 리스트 업데이트 로직 */
+                    renderConsultationList(data.data, filter);
+                 }
+             });
         });
 
         // 리스트 항목 클릭 시 채팅 화면으로 이동
         $('#consultation-list').on('click', '.consultation-item', function() {
-            loadView('chat.html', 'chat');
-            // **AJAX 주석: 해당 상담 ID의 채팅 내역 로드**
-            // const consultationId = $(this).find('.font-bold').text();
-            // $.ajax({ url: `/api/chat/history/${consultationId}`, type: 'GET' });
+            const consultationId = $(this).find('#counsel-id').text().trim();
+            loadView('chat.html', 'chat', { counselId: consultationId });
+
         });
     }
 
     else if (tabId === 'chat') {
+
+        if (data.counselId) {
+             $.ajax({
+                 url: "http://localhost:8080/chat?counselId="+data.counselId,
+                 type: 'GET',
+                 success: function(response) {
+                    renderChatMessages(response.data, data.counselId);
+                 },
+                  error: function(xhr) {
+                       console.error(`[${data.counselId}] 채팅 내역 로드 실패:`, xhr);
+                  }
+             });
+        } else {
+                    console.error("채팅 화면 로드 실패: counselId가 전달되지 않았습니다.");
+        }
+
         // 채팅 전송 로직
         $('#send-chat-btn').on('click', function() { sendMessage('chat-input', '#chat-messages'); });
         $('#chat-input').on('keypress', function(e) {
@@ -318,6 +339,7 @@ function drawCategoryChart() {
  * 채팅 메시지를 화면에 추가하고 서버로 전송합니다.
  */
 function sendMessage(inputId, containerId) {
+    const counselId = $('#counsel-id').text();
     const input = $(`#${inputId}`);
     const message = input.val().trim();
     const messagesContainer = $(containerId);
@@ -340,9 +362,8 @@ function sendMessage(inputId, containerId) {
          $.ajax({
              url: 'http://localhost:8080/chat', type: 'POST',
              contentType: 'application/json',
-                  // 2. 데이터는 JSON 문자열로 변환
              data: JSON.stringify({
-                 counselId: "counsel10",
+                 counselId: counselId,
                  senderId: "user2",
                  senderType: "U",
                  msg: message
@@ -351,7 +372,82 @@ function sendMessage(inputId, containerId) {
     }
 }
 
+// --- HTML을 생성하여 화면을 갱신하는 함수 ---
+function renderConsultationList(data, currentFilter) {
+    const listContainer = $('#consultation-list');
+    let html = '';
 
+    if (!data || data.length === 0) {
+        listContainer.html('<div class="p-4 text-center text-gray-500 border rounded-lg bg-white">상담 내역이 없습니다.</div>');
+        return;
+    }
+
+    data.forEach(item => {
+        // 필터링 (AJAX URL에 필터를 포함하지 않았다면 프론트에서 필터링)
+        if (currentFilter !== 'all' && item.status !== currentFilter) {
+            return; // 현재 필터와 맞지 않으면 스킵
+        }
+
+        // 상태값에 따른 스타일 클래스 결정
+        let statusClass = '';
+        let statusText = '';
+        switch(item.status) {
+            case 'R': statusClass = 'status-waiting'; statusText = '대기중'; break;
+            case 'I': statusClass = 'status-progress'; statusText = '진행중'; break;
+            case 'E': statusClass = 'status-done'; statusText = '완료'; break;
+            default: statusClass = 'status-done'; statusText = '알 수 없음';
+        }
+
+        // 항목별 HTML 생성 (list.html의 구조를 기반)
+        html += `
+            <div class="p-4 border rounded-lg shadow-sm bg-white cursor-pointer hover:bg-gray-50 consultation-item" data-status="${item.status.toLowerCase()}">
+                <div class="flex justify-between items-start mb-2">
+                    <div id="counsel-id" style="display: none;">${item.id}</div>
+                    <div class="font-bold">${item.id}</div>
+                    ${item.unreadCount ? `<span class="text-red-500 font-bold text-lg">${item.unreadCount}</span>` : ''}
+                </div>
+                <div class="flex items-center mb-2">
+                    <span class="status-tag ${statusClass} mr-2">${statusText}</span>
+                    <span class="text-sm text-gray-700">상담사: ${item.counselorId || '미정'}</span>
+                </div>
+                <div class="text-gray-600 mb-2">${item.category}</div>
+                <div class="text-sm text-gray-500 flex justify-between">
+                    <div>${item.lastMessage || '새로운 메시지가 없습니다.'}</div>
+                    <div>${item.timestamp || ''}</div>
+                </div>
+            </div>
+        `;
+    });
+
+    listContainer.html(html);
+}
+
+function renderChatMessages(messages, counselId) {
+    $('#counsel-id').text(counselId);
+    const messagesContainer = $('#chat-messages');
+    messagesContainer.empty(); // 기존 메시지 모두 지우기
+
+    // messages 배열을 순회하며 HTML 생성 (예시)
+    if (messages && messages.length > 0) {
+        messages.forEach(msg => {
+            // 서버에서 받은 데이터에 따라 'mine' 또는 'other' 클래스 적용
+            const isMine = msg.senderType === 'U'; // 'U'는 사용자, 'C'는 상담사라고 가정
+            const bubbleClass = isMine ? 'mine' : 'other';
+            const alignment = isMine ? 'items-end' : 'items-start';
+
+            const chatHtml = `
+                <div class="flex flex-col ${alignment}">
+                    <div class="chat-bubble ${bubbleClass}">${msg.msg}</div>
+                    <div class="text-xs text-gray-500">${msg.regDate}</div>
+                </div>
+            `;
+            messagesContainer.append(chatHtml);
+        });
+        messagesContainer.scrollTop(messagesContainer[0].scrollHeight); // 스크롤 하단으로 이동
+    } else {
+        messagesContainer.html('<div class="text-center text-gray-500">대화 내용이 없습니다. 새로운 메시지를 보내세요.</div>');
+    }
+}
 // --- 초기화 및 이벤트 리스너 ---
 $(document).ready(function() {
     // 헤더 역할 전환 이벤트

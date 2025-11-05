@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:63342", methods = {RequestMethod.POST})
+@CrossOrigin(origins = "http://localhost:63342")
 public class ChatController {
 
     private final ChatService chatService;
