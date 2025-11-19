@@ -8,12 +8,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.async.DeferredResult;
 
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:63342")
+@RequestMapping("/chat")
 public class ChatController {
 
     private final ChatService chatService;
@@ -35,9 +36,9 @@ public class ChatController {
 //        chatService.chatSave(chat);
 //    }
 
-    @PostMapping("/chat")
+    @PostMapping("")
     public ResponseEntity<ApiResponse<Object>> chatSave(@RequestBody Chat chat) {
-        chat = chatService.chatSave(chat);
+        chatService.addMessage(chat);
         return ResponseEntity.ok(ApiResponse.success(chat));
     }
 
@@ -46,10 +47,18 @@ public class ChatController {
      * @param chat
      * @return
      */
-    @GetMapping("/chat")
+    @GetMapping("")
     public ResponseEntity<ApiResponse<Object>> chatList(@ModelAttribute Chat chat) {
         List<Chat> list = chatService.chatList(chat);
         return ResponseEntity.ok(ApiResponse.success(list));
+    }
+
+    @GetMapping("/poll")
+    public DeferredResult<List<Chat>> pollMessages(
+            @RequestParam String counselId,
+            @RequestParam String lastMessageId
+    ) {
+        return chatService.waitMessage(counselId, lastMessageId);
     }
 
 }

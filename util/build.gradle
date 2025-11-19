@@ -27,3 +27,17 @@ test {
 tasks.withType(org.springframework.boot.gradle.tasks.bundling.BootJar).configureEach {
     enabled = false
 }
+
+task copyStaticResources(type: Copy) {
+    // 1. 소스 위치: util 모듈의 실제 정적 파일 위치
+    from 'src/main/resources'
+
+    // 2. 목적지 위치: app 모듈의 빌드/리소스 폴더
+    // app 모듈의 빌드 폴더에 복사
+    destinationDir project(':app').file('src/main/resources')
+
+    // 복사 시점 로그 출력
+    doLast {
+        println "Copied static resources from util to app/src/main/resources/static"
+    }
+}

@@ -33,6 +33,8 @@ const viewMap = {
 
 let currentRole = 'customer';
 let currentFile = 'apply.html';
+let lastMessageId = 0;
+
 
 /**
  * 특정 화면 파일을 로드하고 네비게이션을 업데이트합니다.
@@ -345,16 +347,6 @@ function sendMessage(inputId, containerId) {
     const messagesContainer = $(containerId);
 
     if (message) {
-        const now = new Date();
-        const time = now.getHours() + ':' + ('0' + now.getMinutes()).slice(-2);
-
-        const newMessage = `
-            <div class="flex flex-col items-end">
-                <div class="chat-bubble mine">${message}</div>
-                <div class="text-xs text-gray-500">오전 ${time} (예시)</div>
-            </div>
-        `;
-        messagesContainer.append(newMessage);
         input.val('');
         messagesContainer.scrollTop(messagesContainer[0].scrollHeight);
 
@@ -370,6 +362,107 @@ function sendMessage(inputId, containerId) {
                  })
          });
     }
+}
+function poll() {
+    const counselId = $('#counsel-id').text();
+
+    // counselId 유효성 검사
+    if (!counselId) {
+        console.error('counselId가 없습니다.');
+        setTimeout(poll, 1000);
+        return;
+    }
+
+    fetch(`http://localhost:8080/chat/poll?counselId=${counselId}&lastMessageId=${lastMessageId}`)
+       .then(res => {
+           if (!res.ok) {
+               throw new Error(`HTTP error! status: ${res.status}`);
+           }
+           return res.json();
+       })
+       .then(list => {
+           console.log('Poll response:', list); // 디버깅용
+
+           if (list && list.length > 0) {
+               list.forEach(msg => {
+                   addMsg(msg);
+                  if (!lastMessageId || msg.id > lastMessageId) {
+                      lastMessageId = msg.id;
+                  }
+               });
+           }
+           // 응답이 오면 즉시 다시 long polling 시작
+           poll();
+       })
+       .catch(error => {
+           console.error('Polling error:', error);
+           // 에러 발생해도 1초 후 다시 요청
+           setTimeout(poll, 1000);
+       });
+}
+// XSS 방지를 위한 HTML 이스케이프 함수
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// 메시지를 화면에 추가하는 함수
+function addMsg(msg) {
+    console.log(msg);
+    const chatMessages = document.getElementById('chat-messages');
+    if (!chatMessages) {
+        console.error('chat-messages 요소를 찾을 수 없습니다.');
+        return;
+    }
+
+    const messageDiv = document.createElement('div');
+
+    // 현재 시간
+    const now = new Date();
+    const timeStr = now.getHours().toString().padStart(2, '0') + ':' +
+                    now.getMinutes().toString().padStart(2, '0');
+
+    // 메시지 정렬 결정 로직
+    let isMine = false;
+
+    if (currentRole === 'customer') {
+        // 고객 화면: sender가 'U'면 내 메시지
+        isMine = (msg.senderType === 'U');
+    } else {
+        // 상담사 화면: sender가 'C'이면 내 메시지
+        isMine = (smsg.senderType === 'C');
+    }
+
+    if (isMine) {
+        // 내가 보낸 메시지 (오른쪽 정렬)
+        messageDiv.className = 'flex flex-col items-end';
+        messageDiv.innerHTML = `
+            <div class="chat-bubble mine">${escapeHtml(msg.msg)}</div>
+            <div class="text-xs text-gray-500">${timeStr}</div>
+        `;
+    } else {
+        // 상대방이 보낸 메시지 (왼쪽 정렬)
+        const senderName = currentRole === 'customer' ? '김상담' : '고객';
+        const avatar = currentRole === 'customer' ? '👩‍💼' : '👤';
+
+        messageDiv.className = 'flex items-start';
+        messageDiv.innerHTML = `
+            <div class="w-8 h-8 rounded-full bg-gray-200 mr-3 flex items-center justify-center">
+                <span role="img" aria-label="아바타">${avatar}</span>
+            </div>
+            <div>
+                <div class="text-sm font-medium">${senderName}</div>
+                <div class="chat-bubble other">${escapeHtml(msg.msg)}</div>
+                <div class="text-xs text-gray-500">${timeStr}</div>
+            </div>
+        `;
+    }
+
+    chatMessages.appendChild(messageDiv);
+
+    // 스크롤을 맨 아래로
+    chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
 // --- HTML을 생성하여 화면을 갱신하는 함수 ---
@@ -458,4 +551,9 @@ $(document).ready(function() {
 
     // 초기 고객 화면 로드
     updateNavigation('customer');
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    console.log('Polling started');
+    poll();
 });
