@@ -1,0 +1,85 @@
+<div id="dashboard">
+    <h2 class="text-xl font-semibold mb-2">상담 대시보드</h2>
+    <p class="text-gray-600 mb-6">상담 통계 및 이력을 확인하세요</p>
+
+    <div class="grid grid-cols-4 gap-4 mb-8">
+        <div class="p-6 border rounded-lg shadow-sm bg-white">
+            <div class="text-gray-500 text-sm">총 상담</div>
+            <div class="text-3xl font-bold mt-1">387</div>
+            <div class="text-sm text-green-600">+12.5% <span class="text-gray-500">지난주 대비</span></div>
+        </div>
+        <div class="p-6 border rounded-lg shadow-sm bg-white">
+            <div class="text-gray-500 text-sm">완료된 상담</div>
+            <div class="text-3xl font-bold mt-1">338</div>
+            <div class="text-sm text-gray-500">87.3% 완료율</div>
+        </div>
+        <div class="p-6 border rounded-lg shadow-sm bg-white">
+            <div class="text-gray-500 text-sm">진행중인 상담</div>
+            <div class="text-3xl font-bold mt-1">12</div>
+            <div class="text-sm text-gray-500">실시간 진행중</div>
+        </div>
+        <div class="p-6 border rounded-lg shadow-sm bg-white">
+            <div class="text-gray-500 text-sm">평균 응답 시간</div>
+            <div class="text-3xl font-bold mt-1">2.3분</div>
+            <div class="text-sm text-red-600">-0.5분 <span class="text-gray-500">지난주 대비</span></div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-8">
+        <div class="p-6 border rounded-lg shadow-sm bg-white">
+            <h3 class="text-lg font-semibold mb-4">주간 상담 트렌드</h3>
+            <p class="text-sm text-gray-600 mb-6">이번 주 상담 접수 및 완료 현황</p>
+            <div class="h-64 flex items-center justify-center">
+                <canvas id="weeklyChart"></canvas>
+            </div>
+            <div class="flex justify-center space-x-4 mt-4 text-sm">
+                <span class="flex items-center"><span class="w-3 h-3 bg-blue-500 rounded-full mr-2"></span> 완료</span>
+                <span class="flex items-center"><span class="w-3 h-3 bg-green-500 rounded-full mr-2"></span> 접수</span>
+            </div>
+            <div class="text-sm text-center text-gray-600 mt-2">월 화 수 목 금 토 일</div>
+        </div>
+
+        <div class="p-6 border rounded-lg shadow-sm bg-white">
+            <h3 class="text-lg font-semibold mb-4">시간대별 상담 건수</h3>
+            <p class="text-sm text-gray-600 mb-6">오늘 시간대별 상담 분포</p>
+            <div class="h-64 flex items-center justify-center">
+                <canvas id="hourlyChart"></canvas>
+            </div>
+            <div class="text-sm text-center text-gray-600 mt-4">09:00 11:00 13:00 15:00 17:00</div>
+            <div class="text-center text-purple-500 text-sm mt-1">→ 상담 건수</div>
+        </div>
+
+        <div class="col-span-2 p-6 border rounded-lg shadow-sm bg-white">
+            <h3 class="text-lg font-semibold mb-4">카테고리별 상담 분포</h3>
+            <p class="text-sm text-gray-600 mb-6">이번 달 상담 분야별 현황</p>
+
+            <div class="flex items-center justify-around">
+                <div class="w-1/3 h-64 flex items-center justify-center">
+                    <canvas id="categoryChart"></canvas>
+                </div>
+                <div class="w-1/2 space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="flex items-center"><span class="w-3 h-3 bg-blue-500 rounded-full mr-2"></span> 제품 문의 <span class="ml-2 font-medium">37%</span></span>
+                        <span class="font-bold">145건</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="flex items-center"><span class="w-3 h-3 bg-green-500 rounded-full mr-2"></span> 기술 지원 <span class="ml-2 font-medium">25%</span></span>
+                        <span class="font-bold">96건</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="flex items-center"><span class="w-3 h-3 bg-orange-500 rounded-full mr-2"></span> 결제/환불 <span class="ml-2 font-medium">17%</span></span>
+                        <span class="font-bold">67건</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="flex items-center"><span class="w-3 h-3 bg-purple-500 rounded-full mr-2"></span> 일반 상담 <span class="ml-2 font-medium">14%</span></span>
+                        <span class="font-bold">54건</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="flex items-center"><span class="w-3 h-3 bg-red-500 rounded-full mr-2"></span> 불만 접수 <span class="ml-2 font-medium">6%</span></span>
+                        <span class="font-bold">23건</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

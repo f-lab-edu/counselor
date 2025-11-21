@@ -14,6 +14,8 @@ public class User {
     private String id;
     private String name;
     private String phone;
+    private String email;
+    private String status; // 온/오프라인 상태(ON/OFF)
 
     public User(String name, String phone) {
         this.name = name;

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>고객 상담 시스템 (분리 버전)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* CSS는 main.js에서 동적으로 로드됩니다. */
+    </style>
+</head>
+<body class="bg-white">
+
+<header class="flex justify-between items-center px-6 py-3 border-b border-gray-200">
+    <div class="text-xl font-bold text-primary">상담 시스템</div>
+    <div>
+        <span class="text-sm cursor-pointer hover:underline text-gray-700 header-link" data-view="customer">고객 화면</span>
+        <span class="ml-4 text-sm cursor-pointer hover:underline text-gray-700 header-link" data-view="counselor">상담사 화면</span>
+    </div>
+</header>
+
+<nav class="flex px-6 py-2 border-b border-gray-200" id="main-nav">
+</nav>
+
+<main class="p-8">
+    <div id="content-area">
+    </div>
+</main>
+
+<script src="main.js"></script>
+
+</body>
+</html>

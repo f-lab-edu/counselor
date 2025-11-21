@@ -1,0 +1,73 @@
+<div id="counselor-list">
+    <h2 class="text-xl font-semibold mb-6">상담 관리</h2>
+
+    <div class="mb-6">
+        <input type="text" placeholder="고객명 또는 상담 분야로 검색" class="w-full p-3 border rounded-md bg-gray-100 focus:outline-none focus:ring-1 focus:ring-primary">
+    </div>
+
+    <div class="grid grid-cols-3 gap-4 mb-6">
+        <div class="p-6 border rounded-lg shadow-sm bg-white flex justify-between items-center">
+            <div>
+                <div class="text-gray-500">대기중</div>
+                <div class="text-3xl font-bold">3건</div>
+            </div>
+            <span class="text-yellow-600 text-3xl">🕒</span>
+        </div>
+        <div class="p-6 border rounded-lg shadow-sm bg-white flex justify-between items-center">
+            <div>
+                <div class="text-gray-500">진행중</div>
+                <div class="text-3xl font-bold">2건</div>
+            </div>
+            <span class="text-green-600 text-3xl">💬</span>
+        </div>
+        <div class="p-6 border rounded-lg shadow-sm bg-white flex justify-between items-center">
+            <div>
+                <div class="text-gray-500">오늘 완료</div>
+                <div class="text-3xl font-bold">1건</div>
+            </div>
+            <span class="text-blue-600 text-3xl">✅</span>
+        </div>
+    </div>
+
+    <div class="flex space-x-2 mb-6">
+        <button class="tab-button active px-4 py-2 text-sm rounded-md bg-primary text-white" data-counselor-filter="all">전체</button>
+        <button class="tab-button px-4 py-2 text-sm rounded-md hover:bg-gray-100" data-counselor-filter="waiting">대기중</button>
+        <button class="tab-button px-4 py-2 text-sm rounded-md hover:bg-gray-100" data-counselor-filter="progress">진행중</button>
+        <button class="tab-button px-4 py-2 text-sm rounded-md hover:bg-gray-100" data-counselor-filter="done">완료</button>
+    </div>
+
+    <div id="counselor-consultation-list" class="space-y-4">
+        <div class="p-4 border rounded-lg shadow-sm bg-white flex justify-between items-center cursor-pointer hover:bg-gray-50 consultation-item" data-status="waiting">
+            <div class="flex items-start">
+                <div class="w-10 h-10 rounded-full bg-gray-200 mr-4 flex items-center justify-center">
+                    <span role="img" aria-label="고객 아바타">🧑</span>
+                </div>
+                <div>
+                    <div class="font-bold text-lg flex items-center">이지훈 <span class="status-tag status-waiting ml-2">대기중</span></div>
+                    <div class="text-gray-600 font-medium">제품 문의</div>
+                    <div class="text-sm text-gray-500">제품 사양에 궁금한 점이 있습니다.</div>
+                </div>
+            </div>
+            <div class="flex flex-col items-end">
+                <div class="text-sm text-gray-500 mb-1">5분 전</div>
+                <span class="bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold">3</span>
+            </div>
+        </div>
+
+        <div class="p-4 border rounded-lg shadow-sm bg-white flex justify-between items-center cursor-pointer hover:bg-gray-50 consultation-item" data-status="progress">
+            <div class="flex items-start">
+                <div class="w-10 h-10 rounded-full bg-gray-200 mr-4 flex items-center justify-center">
+                    <span role="img" aria-label="고객 아바타">👧</span>
+                </div>
+                <div>
+                    <div class="font-bold text-lg flex items-center">박민지 <span class="status-tag status-progress ml-2">진행중</span></div>
+                    <div class="text-gray-600 font-medium">기술 지원</div>
+                    <div class="text-sm text-gray-500">문제가 해결되었습니다. 감사합니다!</div>
+                </div>
+            </div>
+            <div class="flex flex-col items-end">
+                <div class="text-sm text-gray-500">15분 전</div>
+            </div>
+        </div>
+    </div>
+</div>

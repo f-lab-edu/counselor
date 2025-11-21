@@ -47,5 +47,5 @@ logging:
     # MongoDB: 쿼리/커넥션 로그 숨김
     org.springframework.data.mongodb.core.MongoTemplate: WARN
     org.springframework.data.mongodb.core.MongoOperations: WARN
-    org.mongodb.driver: WARN
+    org.mongodb.driver: DEBUG
 
