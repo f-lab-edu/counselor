@@ -44,8 +44,9 @@ public class CounselController {
 
     @PatchMapping("/{counselId}")
     public ResponseEntity<ApiResponse<Object>> counselUpdate(@PathVariable String counselId) throws Exception {
-        Counsel counsel = counselService.counselUpdate(counselId);
-        return ResponseEntity.ok(ApiResponse.success(counsel));
+//        Counsel counsel = counselService.counselUpdate(counselId);
+//        return ResponseEntity.ok(ApiResponse.success(counsel));
+        return null;
     }
 
 }
