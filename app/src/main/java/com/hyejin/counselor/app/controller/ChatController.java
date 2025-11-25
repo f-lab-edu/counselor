@@ -54,7 +54,7 @@ public class ChatController {
     }
 
     @GetMapping("/poll")
-    public DeferredResult<List<Chat>> pollMessages(
+    public List<Chat> pollMessages(
             @RequestParam String counselId,
             @RequestParam String lastMessageId
     ) {

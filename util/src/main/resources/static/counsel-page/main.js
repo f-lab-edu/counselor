@@ -369,7 +369,6 @@ function poll() {
     // counselId 유효성 검사
     if (!counselId) {
         console.error('counselId가 없습니다.');
-        setTimeout(poll, 1000);
         return;
     }
 
@@ -391,15 +390,14 @@ function poll() {
                   }
                });
            }
-           // 응답이 오면 즉시 다시 long polling 시작
-           poll();
        })
        .catch(error => {
            console.error('Polling error:', error);
-           // 에러 발생해도 1초 후 다시 요청
-           setTimeout(poll, 1000);
        });
+
 }
+
+
 // XSS 방지를 위한 HTML 이스케이프 함수
 function escapeHtml(text) {
     const div = document.createElement('div');
