@@ -56,7 +56,7 @@ const viewMap = {
 let currentRole = 'customer';
 let currentFile = 'apply.html';
 let lastMessageId = 0;
-
+let POLLING_INTERVAL = 3000; // 3초 (3000ms)
 
 /**
  * 특정 화면 파일을 로드하고 네비게이션을 업데이트합니다.
@@ -180,9 +180,9 @@ function bindViewLogic(tabId, data = {}) {
         }
 
         // 채팅 전송 로직
-        $('#send-chat-btn').on('click', function() { sendMessage('chat-input', '#chat-messages'); });
+        $('#send-chat-btn').on('click', function() { sendMessage('chat-input', '#chat-messages','U'); });
         $('#chat-input').on('keypress', function(e) {
-            if (e.which == 13) { sendMessage('chat-input', '#chat-messages'); }
+            if (e.which == 13) { sendMessage('chat-input', '#chat-messages','U'); }
         });
     }
 
@@ -251,7 +251,7 @@ function bindViewLogic(tabId, data = {}) {
                    console.log(`[${counselId}] 채팅 내역 로드 성공:`, response);
 
                    // 응답 전체 객체를 전달하여 렌더링 함수 호출
-                   renderCounselorChatMessages(response);
+                   renderCounselorChatMessages(response, counselId);
                 },
                  error: function(xhr) {
                       console.error(`[${counselId}] 채팅 내역 로드 실패:`, xhr);
@@ -268,9 +268,9 @@ function bindViewLogic(tabId, data = {}) {
        });
 
        // 채팅 전송 로직 (기존 코드 유지)
-       $('#counselor-chat-detail-input-btn').on('click', function() { sendMessage('counselor-chat-detail-input-field', '#counselor-chat-messages'); });
+       $('#counselor-chat-detail-input-btn').on('click', function() { sendMessage('counselor-chat-detail-input-field', '#counselor-chat-messages','C'); });
        $('#counselor-chat-detail-input-field').on('keypress', function(e) {
-           if (e.which == 13) { sendMessage('counselor-chat-detail-input-field', '#counselor-chat-messages'); }
+           if (e.which == 13) { sendMessage('counselor-chat-detail-input-field', '#counselor-chat-messages','C'); }
        });
         // **AJAX 주석: 상담 메모 작성, 상담 종료 등 추가 기능 구현 필요**
     }
@@ -389,11 +389,12 @@ function drawCategoryChart() {
 /**
  * 채팅 메시지를 화면에 추가하고 서버로 전송합니다.
  */
-function sendMessage(inputId, containerId) {
+function sendMessage(inputId, containerId, senderType) {
     const counselId = $('#counsel-id').text();
     const input = $(`#${inputId}`);
     const message = input.val().trim();
     const messagesContainer = $(containerId);
+    console.log(messagesContainer);
 
     if (message) {
         input.val('');
@@ -405,10 +406,15 @@ function sendMessage(inputId, containerId) {
              contentType: 'application/json',
              data: JSON.stringify({
                  counselId: counselId,
-                 senderId: "user2",
-                 senderType: "U",
+                 senderId: senderType === 'U' ? "user2" : "counselor1",
+                 senderType: senderType,
+//                 senderId: "user2",
+//                 senderType: "U",
                  msg: message
-                 })
+                 }),
+             success: function(response) {
+                poll();
+             }
          });
     }
 }
@@ -439,9 +445,11 @@ function poll() {
                   }
                });
            }
+          setTimeout(poll, 3000);
        })
        .catch(error => {
            console.error('Polling error:', error);
+           setTimeout(poll, 3000);
        });
 
 }
@@ -456,8 +464,10 @@ function escapeHtml(text) {
 
 // 메시지를 화면에 추가하는 함수
 function addMsg(msg) {
-    console.log(msg);
-    const chatMessages = document.getElementById('chat-messages');
+
+    const messagesContainerId = currentRole === 'customer' ? 'chat-messages' : 'counselor-chat-messages';
+    const chatMessages = document.getElementById(messagesContainerId);
+
     if (!chatMessages) {
         console.error('chat-messages 요소를 찾을 수 없습니다.');
         return;
@@ -478,7 +488,7 @@ function addMsg(msg) {
         isMine = (msg.senderType === 'U');
     } else {
         // 상담사 화면: sender가 'C'이면 내 메시지
-        isMine = (smsg.senderType === 'C');
+        isMine = (msg.senderType === 'C');
     }
 
     if (isMine) {
@@ -655,7 +665,8 @@ function renderChatMessages(messages, counselId) {
         messagesContainer.html('<div class="text-center text-gray-500">대화 내용이 없습니다. 새로운 메시지를 보내세요.</div>');
     }
 }
-function renderCounselorChatMessages(response) {
+function renderCounselorChatMessages(response, counselId) {
+    $('#counsel-id').text(counselId);
     const messages = response.data;
     const messagesContainer = $('#counselor-chat-messages');
     messagesContainer.empty();
