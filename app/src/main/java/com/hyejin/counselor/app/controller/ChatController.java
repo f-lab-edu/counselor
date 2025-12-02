@@ -38,7 +38,8 @@ public class ChatController {
 
     @PostMapping("")
     public ResponseEntity<ApiResponse<Object>> chatSave(@RequestBody Chat chat) {
-        chatService.addMessage(chat);
+        chatService.sendMessage(chat); // kafka 연결
+//        chatService.addMessage(chat); // db 연결
         return ResponseEntity.ok(ApiResponse.success(chat));
     }
 
