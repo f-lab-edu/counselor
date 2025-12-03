@@ -440,8 +440,8 @@ function poll() {
            if (list && list.length > 0) {
                list.forEach(msg => {
                    addMsg(msg);
-                  if (!lastMessageId || msg.id > lastMessageId) {
-                      lastMessageId = msg.id;
+                  if (!lastMessageId || msg.messageId > lastMessageId) {
+                      lastMessageId = msg.messageId;
                   }
                });
            }

@@ -2,7 +2,6 @@ package com.hyejin.counselor.core.kafka;
 
 import com.hyejin.counselor.core.entity.Chat;
 import com.hyejin.counselor.core.repository.ChatRepository;
-import com.hyejin.counselor.core.service.ChatService;
 import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,10 +12,12 @@ import org.springframework.stereotype.Service;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -28,8 +29,8 @@ public class BatchMessageConsumer {
     // 채팅방별 최신 메시지 캐시 (Short Polling용)
     private final Map<String, ConcurrentLinkedQueue<Chat>> recentMessagesCache = new ConcurrentHashMap<>();
 
-    private final ConcurrentLinkedQueue<Chat> messageBuffer = new ConcurrentLinkedQueue<>();
-    private final ConcurrentLinkedQueue<Acknowledgment> ackBuffer = new ConcurrentLinkedQueue<>();
+    private final List<Chat> messageBuffer = Collections.synchronizedList(new ArrayList<>());
+    private final List<Acknowledgment> ackBuffer = Collections.synchronizedList(new ArrayList<>());
 
     private static final int BATCH_SIZE = 1000;
     private static final int FLUSH_INTERVAL_MS = 5000; // 5초
@@ -60,12 +61,24 @@ public class BatchMessageConsumer {
     }
 
     // Short Polling으로 최신 메시지 조회
-    public List<Chat> getRecentMessages(String roomId) {
-        ConcurrentLinkedQueue<Chat> cache = recentMessagesCache.get(roomId);
-        if (cache == null) {
-            return new ArrayList<>();
+    public List<Chat> getRecentMessages(String counselId, String lastMessageId) {
+        ConcurrentLinkedQueue<Chat> messages = recentMessagesCache.getOrDefault(counselId, new ConcurrentLinkedQueue<>());
+
+        if (messages.isEmpty()) {
+            return Collections.emptyList();
         }
-        return new ArrayList<>(cache);
+
+        // 이미 새로운 메시지가 있다면 즉시 응답
+        List<Chat> newMessages = messages.stream().filter(m -> {
+            // lastMessageId가 비어있으면 모든 메시지 반환
+            if (lastMessageId == null || lastMessageId.isEmpty()) {
+                return true;
+            }
+            // compareTo() > 0 이면 m.getMessageId()가 더 최신
+            return m.getMessageId().compareTo(lastMessageId) > 0;
+        }).collect(Collectors.toList());
+
+        return newMessages;
     }
 
     // 캐시 정리 (1분마다)
@@ -90,23 +103,13 @@ public class BatchMessageConsumer {
             return;
         }
 
-        List<Chat> messagesToSave = new ArrayList<>();
-        List<Acknowledgment> acksToCommit = new ArrayList<>();
+        // 버퍼의 모든 메시지를 복사
+        List<Chat> messagesToSave = new ArrayList<>(messageBuffer);
+        List<Acknowledgment> acksToCommit = new ArrayList<>(ackBuffer);
 
-        // 버퍼에서 메시지 추출
-        Chat message;
-        while ((message = messageBuffer.poll()) != null) {
-            messagesToSave.add(message);
-        }
-
-        Acknowledgment ack;
-        while ((ack = ackBuffer.poll()) != null) {
-            acksToCommit.add(ack);
-        }
-
-        if (messagesToSave.isEmpty()) {
-            return;
-        }
+        // 버퍼 비우기
+        messageBuffer.clear();
+        ackBuffer.clear();
 
         try {
             // MongoDB에 벌크 insert

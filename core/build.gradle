@@ -45,6 +45,9 @@ dependencies {
 
     //websocket
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+    // ulid
+    implementation 'com.github.f4b6a3:ulid-creator:5.1.0'
 }
 
 test {

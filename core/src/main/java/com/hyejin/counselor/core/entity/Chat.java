@@ -18,6 +18,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Chat {
     @Id
     private String id;
+    private String messageId;
     private String counselId; // 상담 ID
     private String senderId;
     private String senderType;

@@ -1,11 +1,14 @@
 package com.hyejin.counselor.core.kafka;
 
+import com.github.f4b6a3.ulid.UlidCreator;
 import com.hyejin.counselor.core.entity.Chat;
 import com.hyejin.counselor.core.repository.ChatRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
+
+import java.util.UUID;
 
 import static com.hyejin.counselor.core.common.util.DateUtil.nowDate;
 
@@ -20,6 +23,10 @@ public class KafkaProducer {
 
     public void sendMessage(Chat chat) {
         System.out.println("Producer sending message to topic '" + TOPIC_NAME + "': " + chat.getMsg());
+
+        if (chat.getMessageId() == null) {
+            chat.setMessageId(UlidCreator.getUlid().toString());
+        }
         chat.setRegDate(nowDate());
 
         // 메시지 전송
