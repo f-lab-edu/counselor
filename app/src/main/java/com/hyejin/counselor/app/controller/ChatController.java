@@ -38,7 +38,8 @@ public class ChatController {
 
     @PostMapping("")
     public ResponseEntity<ApiResponse<Object>> chatSave(@RequestBody Chat chat) {
-        chatService.addMessage(chat);
+        chatService.sendMessage(chat); // kafka 연결
+//        chatService.addMessage(chat); // db 연결
         return ResponseEntity.ok(ApiResponse.success(chat));
     }
 
@@ -54,7 +55,7 @@ public class ChatController {
     }
 
     @GetMapping("/poll")
-    public DeferredResult<List<Chat>> pollMessages(
+    public List<Chat> pollMessages(
             @RequestParam String counselId,
             @RequestParam String lastMessageId
     ) {

@@ -16,20 +16,40 @@ spring:
   data:
     mongodb:
       uri: mongodb+srv://hyejin:qkrgpwls929!@counselorcluster.hqskivq.mongodb.net/counselor?retryWrites=true&w=majority&appName=counselorCluster
+      auto-index-creation: true
   kafka:
     bootstrap-servers: localhost:9092
+    listener:
+      ack-mode: MANUAL_IMMEDIATE
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       acks: all
+      retries: 3
+      properties:
+        linger.ms: 10
+        batch.size: 16384
     consumer:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      group-id: chat-proccesser
-      auto-offset-reset: latest
+      group-id: chat-consumer-group
+      auto-offset-reset: earliest
+      enable-auto-commit: false
       properties:
         spring.json.value.default.type: com.hyejin.counselor.core.entity.Chat
         spring.json.use.type.headers: false
+        max.poll.records: 1000
+        session.timeout.ms: 30000
+  task:
+    scheduling:
+      pool:
+        size: 5
+# Short Polling 설정
+chat:
+  polling:
+    interval-ms: 3000  # 클라이언트 폴링 권장 간격 (3초)
+    cache-size: 100    # 메모리 캐시 최대 메시지 수
+    cache-expire-ms: 60000  # 캐시 만료 시간 (1분)
 
 logging:
   pattern:
